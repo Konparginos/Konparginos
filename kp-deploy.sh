@@ -1,829 +1,438 @@
 #!/usr/bin/env bash
-# kp-deploy.sh — Build 3 Greek restaurant demo sites and deploy to Firebase Hosting
-set -euo pipefail
-
-PROJECT_ID="${1:-kp-demos-$(openssl rand -hex 4)}"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEPLOY_DIR="$SCRIPT_DIR/kp-sites"
-PUBLIC_DIR="$DEPLOY_DIR/public"
-
-echo "================================================"
-echo "  KP Demo Sites — Firebase Deployment"
-echo "================================================"
-echo "  Project ID : $PROJECT_ID"
-echo "  Output dir : $DEPLOY_DIR"
-echo "================================================"
-
-# ── 1. Firebase CLI ────────────────────────────────────────────────────────────
-if ! command -v firebase &>/dev/null; then
-  echo "▶ Installing Firebase CLI via npm..."
-  npm install -g firebase-tools
-fi
-echo "▶ Firebase CLI: $(firebase --version)"
-
-# ── 2. Directory scaffold ──────────────────────────────────────────────────────
-echo "▶ Creating site files..."
-mkdir -p "$PUBLIC_DIR/vouliotiko" \
-         "$PUBLIC_DIR/psaropouli" \
-         "$PUBLIC_DIR/milopotamos" \
-         "$DEPLOY_DIR/emails"
-
-# ── 3. firebase.json ───────────────────────────────────────────────────────────
-cat > "$DEPLOY_DIR/firebase.json" << 'ENDJSON'
+# KP demo sites — self-contained deploy script (creates files + deploys to Firebase Hosting)
+set -e
+PROJECT_ID="${1:-kp-demos-$((RANDOM%9000+1000))}"
+mkdir -p kp-sites/public/{vouliotiko,psaropouli,milopotamos} kp-sites/emails
+cd kp-sites
+cat > firebase.json << 'KPEOF'
 {
   "hosting": {
     "public": "public",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "cleanUrls": true,
-    "trailingSlash": false
+    "ignore": ["firebase.json", "**/.*"],
+    "cleanUrls": true
   }
 }
-ENDJSON
+KPEOF
 
-# ── 4. .firebaserc ─────────────────────────────────────────────────────────────
-cat > "$DEPLOY_DIR/.firebaserc" << ENDJSON
-{
-  "projects": {
-    "default": "$PROJECT_ID"
-  }
-}
-ENDJSON
+cat > public/index.html << 'KPEOF'
+<!DOCTYPE html>
+<html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>KP — Demos</title>
+<style>body{font-family:system-ui;background:#10222E;color:#F7F5F0;display:grid;place-items:center;min-height:100vh;margin:0}
+a{display:block;color:#F7F5F0;text-decoration:none;border:1px solid #ffffff33;border-radius:12px;padding:14px 22px;margin:8px 0;font-size:17px}
+a:hover{background:#ffffff14}</style></head>
+<body><div><h1 style="font-weight:600">KP · Demo sites</h1>
+<a href="/vouliotiko/">Το Βουλιώτικο — Μεζεδοπωλείο</a>
+<a href="/psaropouli/">το Ψαροπούλι — Ψαροταβέρνα</a>
+<a href="/milopotamos/">ο Μυλοπόταμος — Φούρνος</a>
+</div></body></html>
+KPEOF
 
-# ── 5. Hub index.html ──────────────────────────────────────────────────────────
-cat > "$PUBLIC_DIR/index.html" << 'ENDHTML'
+cat > public/vouliotiko/index.html << 'KPEOF'
 <!DOCTYPE html>
 <html lang="el">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KP Demo Sites — Ελληνικά Εστιατόρια</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Το Βουλιώτικο · Μεζεδοπωλείο στη Βούλα</title>
+<meta name="description" content="Μεζεδοπωλείο στη Βούλα με νοοτροπία Βολιώτικου τσιπουράδικου. Θαλασσινοί και κλασικοί μεζέδες, τσίπουρο, οικογενειακή ατμόσφαιρα.">
+<link href="https://fonts.googleapis.com/css2?family=Literata:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',sans-serif;background:#0d1b2a;color:#e0e0e0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
-  h1{font-size:2.2rem;text-align:center;color:#f5c842;margin-bottom:.5rem}
-  p{text-align:center;color:#9ab;margin-bottom:2.5rem;font-size:1.05rem}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;width:100%;max-width:900px}
-  .card{background:#162032;border-radius:14px;padding:2rem 1.5rem;text-align:center;text-decoration:none;color:inherit;border:1px solid #1e3a5f;transition:.2s}
-  .card:hover{transform:translateY(-4px);border-color:#f5c842}
-  .card .emoji{font-size:3rem;margin-bottom:.8rem}
-  .card h2{font-size:1.3rem;color:#f5c842;margin-bottom:.4rem}
-  .card p{font-size:.9rem;color:#8ab;margin:0}
-  footer{margin-top:3rem;color:#456;font-size:.8rem}
+:root{--wine:#6E2A2A;--paper:#FAF6EE;--ink:#241A14;--brass:#B07A33;--soft:#EFE6D6}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui;background:var(--paper);color:var(--ink);line-height:1.6}
+h1,h2,h3{font-family:Literata,serif}
+.en{display:none}body.lang-en .en{display:revert}body.lang-en .gr{display:none}
+header{background:var(--wine);color:var(--paper);padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-family:Literata,serif;font-weight:700;font-size:20px}
+#lang{background:none;border:1px solid #ffffff66;color:var(--paper);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:13px}
+.hero{background:linear-gradient(160deg,var(--wine) 0%,#4C1D1D 100%);color:var(--paper);padding:64px 20px 72px;text-align:center}
+.hero h1{font-size:clamp(34px,7vw,54px);margin:0 0 10px}
+.hero p{max-width:560px;margin:0 auto 26px;color:#F2E4D2;font-size:17px}
+.cta{display:inline-block;background:var(--brass);color:#fff;text-decoration:none;font-weight:600;border-radius:12px;padding:14px 26px;margin:4px 6px}
+.cta.ghost{background:transparent;border:1px solid #ffffff77}
+section{max-width:860px;margin:0 auto;padding:48px 20px}
+.kicker{color:var(--wine);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+h2{font-size:30px;margin:6px 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--soft);border-radius:14px;padding:18px}
+.card h3{margin:0 0 6px;font-size:18px}
+.menu li{display:flex;justify-content:space-between;border-bottom:1px dashed var(--soft);padding:9px 0;list-style:none}
+.menu{padding:0;margin:0}
+blockquote{background:#fff;border-left:4px solid var(--brass);border-radius:0 12px 12px 0;padding:14px 18px;margin:10px 0;font-style:italic}
+blockquote small{display:block;font-style:normal;color:#7A6C5C;margin-top:6px}
+form{display:grid;gap:10px}
+input,select,textarea{border:1px solid #D9CDBB;border-radius:10px;padding:12px;font-size:15px;font-family:inherit;background:#fff;width:100%}
+button[type=submit]{background:var(--wine);color:#fff;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:600;cursor:pointer}
+footer{background:var(--ink);color:#D8CBB8;padding:34px 20px;text-align:center;font-size:14px}
+footer a{color:var(--paper)}
+.bar{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;background:var(--soft);padding:14px;font-size:14px;font-weight:500}
+@media(prefers-reduced-motion:no-preference){.card{transition:transform .15s}.card:hover{transform:translateY(-3px)}}
 </style>
 </head>
 <body>
-<h1>🍽️ KP Demo Restaurants</h1>
-<p>Three live demo websites built for Greek tavernas — click to explore</p>
-<div class="grid">
-  <a class="card" href="/vouliotiko">
-    <div class="emoji">🍷</div>
-    <h2>Το Βουλιώτικο</h2>
-    <p>Παραδοσιακή μεζεδοπωλείο — Traditional mezze taverna</p>
-  </a>
-  <a class="card" href="/psaropouli">
-    <div class="emoji">🐟</div>
-    <h2>το Ψαροπούλι</h2>
-    <p>Φρέσκα ψάρια καθημερινά — Fresh fish taverna by the sea</p>
-  </a>
-  <a class="card" href="/milopotamos">
-    <div class="emoji">🍞</div>
-    <h2>ο Μυλοπόταμος</h2>
-    <p>Παραδοσιακός φούρνος — Traditional bakery &amp; café</p>
-  </a>
-</div>
-<footer>Demo sites created by Konstantinos Parginos · Firebase Hosting</footer>
-</body>
-</html>
-ENDHTML
-
-# ── 6. Βουλιώτικο ─────────────────────────────────────────────────────────────
-cat > "$PUBLIC_DIR/vouliotiko/index.html" << 'ENDHTML'
-<!DOCTYPE html>
-<html lang="el" data-lang="el">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Το Βουλιώτικο — Μεζεδοπωλείο</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{--clay:#b5451b;--sand:#f5e6c8;--dark:#2c1a0e;--olive:#5a7a2a;--light:#fffbf3}
-  body{font-family:'Segoe UI',sans-serif;background:var(--light);color:var(--dark)}
-  /* NAV */
-  nav{background:var(--clay);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
-  nav .logo{color:#fff;font-size:1.4rem;font-weight:700;text-decoration:none}
-  nav .links a{color:#fde;text-decoration:none;margin-left:1.2rem;font-size:.95rem}
-  nav .links a:hover{color:#fff}
-  .lang-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:.3rem .8rem;border-radius:20px;cursor:pointer;font-size:.85rem}
-  .lang-btn:hover{background:rgba(255,255,255,.3)}
-  /* HERO */
-  .hero{background:linear-gradient(135deg,var(--clay) 0%,#7a2e10 100%);color:#fff;text-align:center;padding:5rem 2rem}
-  .hero h1{font-size:3rem;margin-bottom:1rem;text-shadow:0 2px 8px rgba(0,0,0,.4)}
-  .hero p{font-size:1.2rem;opacity:.9;max-width:600px;margin:0 auto 2rem}
-  .hero .cta{display:inline-block;background:var(--sand);color:var(--clay);padding:.8rem 2rem;border-radius:30px;text-decoration:none;font-weight:700;font-size:1rem}
-  .hero .cta:hover{background:#fff}
-  /* SECTIONS */
-  section{padding:4rem 2rem;max-width:1000px;margin:0 auto}
-  h2{font-size:1.9rem;color:var(--clay);margin-bottom:1.5rem;text-align:center}
-  /* MENU */
-  .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
-  .menu-item{background:#fff;border-radius:10px;padding:1.2rem;border-left:4px solid var(--clay);box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  .menu-item h3{color:var(--clay);font-size:1rem;margin-bottom:.3rem}
-  .menu-item p{font-size:.85rem;color:#666;margin-bottom:.5rem}
-  .menu-item .price{font-weight:700;color:var(--olive);font-size:1rem}
-  /* INFO */
-  .info-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem}
-  .info-card{text-align:center;padding:1.5rem;background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  .info-card .icon{font-size:2rem;margin-bottom:.5rem}
-  .info-card h3{font-size:1rem;color:var(--clay);margin-bottom:.3rem}
-  .info-card p{font-size:.85rem;color:#555}
-  .info-card a{color:var(--clay);text-decoration:none}
-  /* FORM */
-  .form-wrap{background:#fff;border-radius:14px;padding:2rem;box-shadow:0 4px 16px rgba(0,0,0,.08);max-width:600px;margin:0 auto}
-  .form-group{margin-bottom:1.2rem}
-  label{display:block;font-size:.9rem;color:var(--dark);margin-bottom:.3rem;font-weight:600}
-  input,select,textarea{width:100%;padding:.7rem 1rem;border:1px solid #ddd;border-radius:8px;font-size:.95rem;font-family:inherit}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--clay)}
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-  button[type=submit]{background:var(--clay);color:#fff;border:none;padding:.8rem 2rem;border-radius:30px;font-size:1rem;font-weight:700;cursor:pointer;width:100%}
-  button[type=submit]:hover{background:#9a3810}
-  /* FOOTER */
-  footer{background:var(--dark);color:#cba;text-align:center;padding:2rem;font-size:.9rem}
-  footer a{color:#f5c842;text-decoration:none}
-  /* LANG */
-  [data-lang=en] .el{display:none}
-  [data-lang=el] .en{display:none}
-  @media(max-width:600px){
-    .hero h1{font-size:2rem}
-    .form-row{grid-template-columns:1fr}
-    nav .links{display:none}
-  }
-</style>
-</head>
-<body>
-<nav>
-  <a class="logo" href="/">← <span class="el">Το Βουλιώτικο</span><span class="en">To Vouliwtiko</span></a>
-  <div class="links">
-    <a href="#menu"><span class="el">Μενού</span><span class="en">Menu</span></a>
-    <a href="#info"><span class="el">Πληροφορίες</span><span class="en">Info</span></a>
-    <a href="#reservation"><span class="el">Κράτηση</span><span class="en">Reserve</span></a>
-  </div>
-  <button class="lang-btn" onclick="toggleLang()">EN / ΕΛ</button>
-</nav>
+<header>
+  <div class="logo">Το Βουλιώτικο</div>
+  <button id="lang" onclick="document.body.classList.toggle('lang-en');this.textContent=document.body.classList.contains('lang-en')?'ΕΛ':'EN'">EN</button>
+</header>
 
 <div class="hero">
-  <h1>🍷 <span class="el">Το Βουλιώτικο</span><span class="en">To Vouliwtiko</span></h1>
-  <p class="el">Αυθεντικά μεζεδάκια, κρασί χύμα και παρέα που δεν ξεχνιέται</p>
-  <p class="en">Authentic mezze, house wine, and unforgettable company</p>
-  <a class="cta" href="#reservation"><span class="el">Κάνε κράτηση</span><span class="en">Book a table</span></a>
+  <h1>Το Βουλιώτικο</h1>
+  <p class="gr">Μεζεδοπωλείο με ψυχή Βολιώτικου τσιπουράδικου, στην καρδιά της Βούλας. Θαλασσινοί μεζέδες, τσίπουρο και παρέα — δίπλα στην παιδική χαρά, με εύκολο πάρκινγκ.</p>
+  <p class="en">A meze house with the soul of a Volos tsipouradiko, in the heart of Voula. Seafood mezedes, tsipouro and good company — next to the playground, with easy parking.</p>
+  <a class="cta" href="#booking"><span class="gr">Κράτηση τραπεζιού</span><span class="en">Book a table</span></a>
+  <a class="cta ghost" href="tel:+302110017730">☎ 211 001 7730</a>
 </div>
 
-<section id="menu">
-  <h2><span class="el">Το Μενού μας</span><span class="en">Our Menu</span></h2>
-  <div class="menu-grid">
-    <div class="menu-item">
-      <h3><span class="el">Τυροκαυτερή</span><span class="en">Spicy Feta Dip</span></h3>
-      <p class="el">Καυτερή φέτα με ντομάτα &amp; πιπεριά</p><p class="en">Spicy feta with tomato &amp; pepper</p>
-      <div class="price">4,50 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Χταπόδι σχάρας</span><span class="en">Grilled Octopus</span></h3>
-      <p class="el">Φρέσκο χταπόδι με λαδολέμονο</p><p class="en">Fresh octopus with olive oil &amp; lemon</p>
-      <div class="price">11,00 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Κολοκυθοκεφτέδες</span><span class="en">Zucchini Fritters</span></h3>
-      <p class="el">Τραγανοί, σερβιρισμένοι με τζατζίκι</p><p class="en">Crispy, served with tzatziki</p>
-      <div class="price">6,00 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Σαγανάκι</span><span class="en">Pan-fried Cheese</span></h3>
-      <p class="el">Τηγανητό κεφαλοτύρι με λεμόνι</p><p class="en">Fried kefalotiri with lemon</p>
-      <div class="price">7,50 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Μελιτζανοσαλάτα</span><span class="en">Aubergine Salad</span></h3>
-      <p class="el">Ψητή μελιτζάνα με σκόρδο &amp; παρσλεϊ</p><p class="en">Roasted aubergine with garlic &amp; parsley</p>
-      <div class="price">5,00 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Κρασί χύμα (καράφα)</span><span class="en">House Wine (carafe)</span></h3>
-      <p class="el">Τοπικός οίνος 500ml</p><p class="en">Local wine 500ml</p>
-      <div class="price">8,00 €</div>
-    </div>
+<div class="bar">
+  <span class="gr">⭐ 4,6 στο Google (200+ κριτικές)</span><span class="en">⭐ 4.6 on Google (200+ reviews)</span>
+  <span class="gr">👨‍👩‍👧 Φιλικό για οικογένειες</span><span class="en">👨‍👩‍👧 Family friendly</span>
+  <span class="gr">🛵 Delivery μέσω efood</span><span class="en">🛵 Delivery via efood</span>
+</div>
+
+<section>
+  <div class="kicker"><span class="gr">Από την κουζίνα μας</span><span class="en">From our kitchen</span></div>
+  <h2 class="gr">Οι μεζέδες που αγαπήθηκαν</h2><h2 class="en">The mezedes people love</h2>
+  <ul class="menu">
+    <li><span class="gr">Καλαμαράκι τηγανητό — τρυφερό, όπως πρέπει</span><span class="en">Fried squid — tender, as it should be</span></li>
+    <li><span class="gr">Χταπόδι ξιδάτο</span><span class="en">Octopus in vinegar</span></li>
+    <li><span class="gr">Γαρίδες παστές</span><span class="en">Cured prawns</span></li>
+    <li><span class="gr">Τυροκαυτερή</span><span class="en">Spicy cheese dip</span></li>
+    <li><span class="gr">Μπακαλιάρος σκορδαλιά</span><span class="en">Cod with garlic dip</span></li>
+  </ul>
+  <p style="font-size:13px;color:#7A6C5C"><span class="gr">* Ενδεικτικά πιάτα από τις κριτικές των πελατών μας. Ο πλήρης κατάλογος στο κατάστημα.</span><span class="en">* A taste of what guests mention most. Full menu in store.</span></p>
+</section>
+
+<section style="padding-top:0">
+  <div class="kicker"><span class="gr">Είπαν για εμάς</span><span class="en">What guests say</span></div>
+  <blockquote><span class="gr">«Κάθε πιάτο και γευστική έκπληξη — από το χταπόδι μέχρι τις παστές γαρίδες.»</span><span class="en">"Every dish a delight — from the octopus to the cured prawns."</span><small>— Google review</small></blockquote>
+  <blockquote><span class="gr">«Αυθεντικό ελληνικό φαγητό, ιδανικό για οικογένειες, πρόθυμο προσωπικό.»</span><span class="en">"Authentic Greek food, child-friendly, helpful staff."</span><small>— Google review</small></blockquote>
+</section>
+
+<section style="padding-top:0">
+  <div class="grid">
+    <div class="card"><h3 class="gr">Ωράριο</h3><h3 class="en">Hours</h3>
+      <p class="gr">Τρ–Πα 13:00–23:00<br>Σά 12:00–23:00 · Κυ 12:00–22:00<br>Δευτέρα κλειστά</p>
+      <p class="en">Tue–Fri 1pm–11pm<br>Sat 12–11pm · Sun 12–10pm<br>Closed Mondays</p></div>
+    <div class="card"><h3 class="gr">Πού θα μας βρείτε</h3><h3 class="en">Find us</h3>
+      <p>Στρατάρχου Αλ. Παπάγου 28, Βούλα 166 73<br><a href="https://maps.google.com/?q=Το+Βουλιώτικο+Μεζεδοπωλείο+Βούλα">Google Maps →</a></p></div>
+    <div class="card"><h3 class="gr">Παραγγελία σπίτι</h3><h3 class="en">Order in</h3>
+      <p><a href="https://www.e-food.gr/delivery/boula/to-voyliotiko-mezedopoleio-6960634">efood →</a></p></div>
   </div>
 </section>
 
-<section id="info" style="background:#fff8f0;padding:4rem 2rem;max-width:100%">
-  <div style="max-width:1000px;margin:0 auto">
-    <h2><span class="el">Βρείτε μας</span><span class="en">Find Us</span></h2>
-    <div class="info-cards">
-      <div class="info-card">
-        <div class="icon">📍</div>
-        <h3><span class="el">Διεύθυνση</span><span class="en">Address</span></h3>
-        <p><a href="https://maps.google.com/?q=Βουλιώτικο+ταβέρνα" target="_blank">
-          <span class="el">Κεντρική Πλατεία 5, Βουλιαγμένη</span>
-          <span class="en">5 Central Square, Vouliagmeni</span>
-        </a></p>
-      </div>
-      <div class="info-card">
-        <div class="icon">📞</div>
-        <h3><span class="el">Τηλέφωνο</span><span class="en">Phone</span></h3>
-        <p><a href="tel:+302109000111">+30 210 900 0111</a></p>
-      </div>
-      <div class="info-card">
-        <div class="icon">🕐</div>
-        <h3><span class="el">Ώρες</span><span class="en">Hours</span></h3>
-        <p class="el">Καθημερινά 18:00 – 01:00</p>
-        <p class="en">Daily 18:00 – 01:00</p>
-      </div>
-      <div class="info-card">
-        <div class="icon">🅿️</div>
-        <h3><span class="el">Parking</span><span class="en">Parking</span></h3>
-        <p class="el">Δωρεάν χώρος στάθμευσης</p>
-        <p class="en">Free parking available</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="reservation" style="max-width:1000px;margin:0 auto;padding:4rem 2rem">
-  <h2><span class="el">Κάνε Κράτηση</span><span class="en">Make a Reservation</span></h2>
-  <div class="form-wrap">
-    <form action="https://formsubmit.co/demo@example.com" method="POST">
-      <input type="hidden" name="_subject" value="Νέα κράτηση - Βουλιώτικο">
-      <input type="hidden" name="_captcha" value="false">
-      <div class="form-row">
-        <div class="form-group">
-          <label><span class="el">Όνομα</span><span class="en">Name</span></label>
-          <input type="text" name="name" required placeholder="π.χ. Γιώργος Παπαδόπουλος">
-        </div>
-        <div class="form-group">
-          <label><span class="el">Τηλέφωνο</span><span class="en">Phone</span></label>
-          <input type="tel" name="phone" required placeholder="+30 69...">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label><span class="el">Ημερομηνία</span><span class="en">Date</span></label>
-          <input type="date" name="date" required>
-        </div>
-        <div class="form-group">
-          <label><span class="el">Ώρα</span><span class="en">Time</span></label>
-          <select name="time">
-            <option>18:00</option><option>18:30</option><option>19:00</option>
-            <option>19:30</option><option>20:00</option><option>20:30</option>
-            <option>21:00</option><option>21:30</option><option>22:00</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label><span class="el">Αριθμός ατόμων</span><span class="en">Number of guests</span></label>
-        <select name="guests">
-          <option>1</option><option>2</option><option>3</option><option>4</option>
-          <option>5</option><option>6</option><option>7-10</option><option>10+</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label><span class="el">Ειδικές σημειώσεις</span><span class="en">Special requests</span></label>
-        <textarea name="notes" rows="3" placeholder="..."></textarea>
-      </div>
-      <button type="submit"><span class="el">Αποστολή Κράτησης</span><span class="en">Send Reservation</span></button>
-    </form>
-  </div>
+<section id="booking" style="padding-top:0">
+  <div class="kicker"><span class="gr">Κρατήσεις</span><span class="en">Reservations</span></div>
+  <h2 class="gr">Κλείστε τραπέζι</h2><h2 class="en">Book a table</h2>
+  <form action="https://formsubmit.co/konstantinosparginos@gmail.com" method="POST">
+    <input type="hidden" name="_subject" value="Κράτηση — Το Βουλιώτικο">
+    <input type="hidden" name="_captcha" value="false">
+    <input name="name" required placeholder="Όνομα / Name">
+    <input name="phone" required placeholder="Τηλέφωνο / Phone">
+    <div style="display:flex;gap:10px"><input type="date" name="date" required style="flex:1"><input type="time" name="time" required style="flex:1"></div>
+    <select name="guests"><option>2 άτομα / guests</option><option>3</option><option>4</option><option>5</option><option>6+</option></select>
+    <textarea name="notes" rows="2" placeholder="Σχόλια / Notes (προαιρετικά)"></textarea>
+    <button type="submit"><span class="gr">Αποστολή κράτησης</span><span class="en">Send reservation</span></button>
+  </form>
 </section>
 
 <footer>
-  <p>© 2025 Το Βουλιώτικο &nbsp;|&nbsp; <a href="tel:+302109000111">+30 210 900 0111</a> &nbsp;|&nbsp;
-  <a href="https://maps.google.com/?q=Βουλιώτικο+ταβέρνα" target="_blank">Google Maps</a></p>
-  <p style="margin-top:.5rem;color:#876;font-size:.8rem">Demo site by <a href="/">KP Demo Sites</a></p>
+  Το Βουλιώτικο · Στρ. Αλ. Παπάγου 28, Βούλα · <a href="tel:+302110017730">211 001 7730</a><br>
+  <span style="opacity:.55;font-size:12px">Demo σχεδιασμένο από KP · kp-demos</span>
 </footer>
-
-<script>
-function toggleLang(){
-  var h=document.documentElement;
-  h.dataset.lang = h.dataset.lang==='el' ? 'en' : 'el';
-}
-</script>
 </body>
 </html>
-ENDHTML
+KPEOF
 
-# ── 7. Ψαροπούλι ──────────────────────────────────────────────────────────────
-cat > "$PUBLIC_DIR/psaropouli/index.html" << 'ENDHTML'
+cat > public/psaropouli/index.html << 'KPEOF'
 <!DOCTYPE html>
-<html lang="el" data-lang="el">
+<html lang="el">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>το Ψαροπούλι — Ψαροταβέρνα</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>το Ψαροπούλι · Ψαροταβέρνα στη Βούλα</title>
+<meta name="description" content="Φρέσκο ψάρι καθημερινά στη Βούλα. Σεβίτσε μπαρμπούνι, σφυρίδα στον ατμό, φιλόξενη ατμόσφαιρα. Κρατήσεις online.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{--sea:#0a6b8a;--foam:#e8f6f9;--dark:#0a2332;--coral:#e05c35;--light:#f0fbff}
-  body{font-family:'Segoe UI',sans-serif;background:var(--light);color:var(--dark)}
-  nav{background:var(--sea);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
-  nav .logo{color:#fff;font-size:1.4rem;font-weight:700;text-decoration:none}
-  nav .links a{color:#aee;text-decoration:none;margin-left:1.2rem;font-size:.95rem}
-  nav .links a:hover{color:#fff}
-  .lang-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:.3rem .8rem;border-radius:20px;cursor:pointer;font-size:.85rem}
-  .hero{background:linear-gradient(135deg,var(--sea) 0%,#063d52 100%);color:#fff;text-align:center;padding:5rem 2rem}
-  .hero h1{font-size:3rem;margin-bottom:1rem;text-shadow:0 2px 8px rgba(0,0,0,.4)}
-  .hero p{font-size:1.2rem;opacity:.9;max-width:600px;margin:0 auto 2rem}
-  .hero .cta{display:inline-block;background:var(--coral);color:#fff;padding:.8rem 2rem;border-radius:30px;text-decoration:none;font-weight:700}
-  .hero .cta:hover{background:#c44a28}
-  .catch-banner{background:var(--sea);color:#fff;text-align:center;padding:.8rem 2rem;font-size:1rem}
-  .catch-banner strong{color:#ffe066}
-  section{padding:4rem 2rem;max-width:1000px;margin:0 auto}
-  h2{font-size:1.9rem;color:var(--sea);margin-bottom:1.5rem;text-align:center}
-  .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
-  .menu-item{background:#fff;border-radius:10px;padding:1.2rem;border-top:4px solid var(--sea);box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  .menu-item h3{color:var(--sea);font-size:1rem;margin-bottom:.3rem}
-  .menu-item p{font-size:.85rem;color:#556;margin-bottom:.5rem}
-  .menu-item .price{font-weight:700;color:var(--coral)}
-  .fresh{display:inline-block;background:#e8f6f9;color:var(--sea);font-size:.72rem;padding:.15rem .5rem;border-radius:10px;font-weight:700;margin-left:.3rem}
-  .info-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem}
-  .info-card{text-align:center;padding:1.5rem;background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  .info-card .icon{font-size:2rem;margin-bottom:.5rem}
-  .info-card h3{font-size:1rem;color:var(--sea);margin-bottom:.3rem}
-  .info-card a{color:var(--sea);text-decoration:none}
-  .form-wrap{background:#fff;border-radius:14px;padding:2rem;box-shadow:0 4px 16px rgba(0,0,0,.08);max-width:600px;margin:0 auto}
-  .form-group{margin-bottom:1.2rem}
-  label{display:block;font-size:.9rem;color:var(--dark);margin-bottom:.3rem;font-weight:600}
-  input,select,textarea{width:100%;padding:.7rem 1rem;border:1px solid #ddd;border-radius:8px;font-size:.95rem;font-family:inherit}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sea)}
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-  button[type=submit]{background:var(--sea);color:#fff;border:none;padding:.8rem 2rem;border-radius:30px;font-size:1rem;font-weight:700;cursor:pointer;width:100%}
-  button[type=submit]:hover{background:#085570}
-  footer{background:var(--dark);color:#acd;text-align:center;padding:2rem;font-size:.9rem}
-  footer a{color:#ffe066;text-decoration:none}
-  [data-lang=en] .el{display:none}
-  [data-lang=el] .en{display:none}
-  @media(max-width:600px){.hero h1{font-size:2rem}.form-row{grid-template-columns:1fr}nav .links{display:none}}
+:root{--sea:#0E4C66;--foam:#F4F8F9;--ink:#0C2630;--coral:#E2683F;--mist:#DCE9EE}
+*{box-sizing:border-box}body{margin:0;font-family:Manrope,system-ui;background:var(--foam);color:var(--ink);line-height:1.6}
+h1,h2,h3{font-family:Fraunces,serif}
+.en{display:none}body.lang-en .en{display:revert}body.lang-en .gr{display:none}
+header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;background:var(--foam);border-bottom:1px solid var(--mist)}
+.logo{font-family:Fraunces,serif;font-weight:700;font-size:20px;color:var(--sea)}
+#lang{background:none;border:1px solid var(--sea);color:var(--sea);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:13px}
+.hero{background:linear-gradient(180deg,var(--sea),#072F40);color:#fff;text-align:center;padding:64px 20px 88px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(36px,8vw,58px);margin:0 0 10px;font-style:italic}
+.hero p{max-width:520px;margin:0 auto 26px;color:#CFE4ED;font-size:17px}
+.wave{position:absolute;bottom:-2px;left:0;width:100%}
+.cta{display:inline-block;background:var(--coral);color:#fff;text-decoration:none;font-weight:600;border-radius:12px;padding:14px 26px;margin:4px 6px}
+.cta.ghost{background:transparent;border:1px solid #ffffff77}
+section{max-width:860px;margin:0 auto;padding:48px 20px}
+.kicker{color:var(--coral);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+h2{font-size:30px;margin:6px 0 18px;color:var(--sea)}
+.menu li{display:flex;justify-content:space-between;border-bottom:1px dashed var(--mist);padding:9px 0;list-style:none}
+.menu{padding:0;margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--mist);border-radius:14px;padding:18px}
+.card h3{margin:0 0 6px;font-size:18px;color:var(--sea)}
+blockquote{background:#fff;border-left:4px solid var(--coral);border-radius:0 12px 12px 0;padding:14px 18px;margin:10px 0;font-style:italic}
+blockquote small{display:block;font-style:normal;color:#5E7682;margin-top:6px}
+.notice{background:#FDEFE7;border:1px solid #F3CDB7;border-radius:12px;padding:12px 16px;font-size:14px;font-weight:500}
+form{display:grid;gap:10px}
+input,select,textarea{border:1px solid #C6D8E0;border-radius:10px;padding:12px;font-size:15px;font-family:inherit;background:#fff;width:100%}
+button[type=submit]{background:var(--sea);color:#fff;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:600;cursor:pointer}
+footer{background:var(--ink);color:#B9CDD6;padding:34px 20px;text-align:center;font-size:14px}
+footer a{color:#fff}
 </style>
 </head>
 <body>
-<nav>
-  <a class="logo" href="/">← <span class="el">το Ψαροπούλι</span><span class="en">The Fish Place</span></a>
-  <div class="links">
-    <a href="#menu"><span class="el">Μενού</span><span class="en">Menu</span></a>
-    <a href="#info"><span class="el">Πληροφορίες</span><span class="en">Info</span></a>
-    <a href="#booking"><span class="el">Κράτηση</span><span class="en">Book</span></a>
-  </div>
-  <button class="lang-btn" onclick="toggleLang()">EN / ΕΛ</button>
-</nav>
+<header>
+  <div class="logo">το Ψαροπούλι</div>
+  <button id="lang" onclick="document.body.classList.toggle('lang-en');this.textContent=document.body.classList.contains('lang-en')?'ΕΛ':'EN'">EN</button>
+</header>
 
 <div class="hero">
-  <h1>🐟 <span class="el">το Ψαροπούλι</span><span class="en">The Fish Place</span></h1>
-  <p class="el">Φρέσκα ψάρια απ' την αγορά κάθε πρωί — θαλασσινά που μυρίζουν θάλασσα</p>
-  <p class="en">Fresh-from-market fish every morning — seafood that tastes like the sea</p>
-  <a class="cta" href="#booking"><span class="el">Κλείσε τραπέζι</span><span class="en">Book a table</span></a>
+  <h1>το Ψαροπούλι</h1>
+  <p class="gr">Φρέσκο ψάρι καθημερινά, σε έναν μικρό, φιλόξενο χώρο στη Βούλα. Ο Παύλος και η ομάδα του σας περιμένουν.</p>
+  <p class="en">Fresh fish daily, in a small, welcoming spot in Voula. Pavlos and his team look forward to seeing you.</p>
+  <a class="cta" href="#booking"><span class="gr">Κράτηση — απαραίτητη Σ/Κ</span><span class="en">Book — essential on weekends</span></a>
+  <a class="cta ghost" href="tel:+302108953986">☎ 210 895 3986</a>
+  <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" height="60"><path d="M0 30 Q120 0 240 30 T480 30 T720 30 T960 30 T1200 30 T1440 30 V60 H0 Z" fill="#F4F8F9"/></svg>
 </div>
 
-<div class="catch-banner">
-  🎣 <span class="el"><strong>Σημερινή σύλληψη:</strong> Λαβράκι, Τσιπούρα, Μύδια Θεσσαλονίκης</span>
-  <span class="en"><strong>Today's catch:</strong> Sea bass, Gilt-head bream, Thessaloniki mussels</span>
-</div>
+<section>
+  <div class="kicker"><span class="gr">Η ψαριά της ημέρας</span><span class="en">Catch of the day</span></div>
+  <h2 class="gr">Ό,τι φέρνει η θάλασσα</h2><h2 class="en">Whatever the sea brings</h2>
+  <ul class="menu">
+    <li><span class="gr">Σεβίτσε μπαρμπούνι</span><span class="en">Red mullet ceviche</span></li>
+    <li><span class="gr">Σφυρίδα στον ατμό, λαδολέμονο</span><span class="en">Steamed grouper, olive oil &amp; lemon</span></li>
+    <li><span class="gr">Φρέσκο ψάρι ημέρας στη σχάρα</span><span class="en">Grilled fresh fish of the day</span></li>
+    <li><span class="gr">Θαλασσινοί μεζέδες</span><span class="en">Seafood mezedes</span></li>
+  </ul>
+  <p style="font-size:13px;color:#5E7682"><span class="gr">* Πιάτα που ξεχωρίζουν οι πελάτες μας στις κριτικές. Ο κατάλογος αλλάζει με την ψαριά.</span><span class="en">* Guest favourites from our reviews. The menu follows the catch.</span></p>
+</section>
 
-<section id="menu">
-  <h2><span class="el">Θαλασσινά &amp; Ψάρια</span><span class="en">Seafood &amp; Fish</span></h2>
-  <div class="menu-grid">
-    <div class="menu-item">
-      <h3><span class="el">Λαβράκι σχάρας</span><span class="en">Grilled Sea Bass</span> <span class="fresh">FRESH</span></h3>
-      <p class="el">Ολόκληρο, λαδολέμονο, ρίγανη</p><p class="en">Whole, olive oil &amp; lemon, oregano</p>
-      <div class="price"><span class="el">τιμή / κιλό</span><span class="en">price / kg</span> 32 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Μύδια σαγανάκι</span><span class="en">Mussels saganaki</span> <span class="fresh">FRESH</span></h3>
-      <p class="el">Σε σάλτσα ντομάτας με φέτα</p><p class="en">In tomato sauce with feta cheese</p>
-      <div class="price">12 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Καλαμαράκια τηγανητά</span><span class="en">Fried Calamari</span></h3>
-      <p class="el">Τραγανά, με σκορδαλιά</p><p class="en">Crispy rings, with garlic dip</p>
-      <div class="price">9 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Γαρίδες σχάρας</span><span class="en">Grilled Prawns</span> <span class="fresh">FRESH</span></h3>
-      <p class="el">Μεγάλες γαρίδες, βούτυρο, σκόρδο</p><p class="en">King prawns, butter &amp; garlic</p>
-      <div class="price">18 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Ψαρόσουπα</span><span class="en">Fish Soup</span></h3>
-      <p class="el">Παραδοσιακή κακαβιά</p><p class="en">Traditional kakavia fish stew</p>
-      <div class="price">10 €</div>
-    </div>
-    <div class="menu-item">
-      <h3><span class="el">Ταραμοσαλάτα</span><span class="en">Taramosalata</span></h3>
-      <p class="el">Σπιτική, με φρεσκοψημένο ψωμί</p><p class="en">Homemade, with freshly baked bread</p>
-      <div class="price">5 €</div>
-    </div>
+<section style="padding-top:0">
+  <blockquote><span class="gr">«Το καλύτερο φαγητό που έχω φάει — ευχάριστη ατμόσφαιρα, ευγενικό προσωπικό.»</span><span class="en">"The best food I've ever had — pleasant atmosphere, very polite staff."</span><small>— Google review</small></blockquote>
+  <blockquote><span class="gr">«Φρέσκο ψάρι σε λογικές τιμές, με τον Παύλο εξαιρετικό οικοδεσπότη.»</span><span class="en">"Fresh fish at fair prices, with Pavlos a great host."</span><small>— Google review</small></blockquote>
+  <div class="notice"><span class="gr">Ο χώρος είναι μικρός — τα Σαββατοκύριακα η κράτηση είναι απαραίτητη.</span><span class="en">We're a small venue — weekend bookings are essential.</span></div>
+</section>
+
+<section style="padding-top:0">
+  <div class="grid">
+    <div class="card"><h3 class="gr">Ωράριο</h3><h3 class="en">Hours</h3>
+      <p class="gr">Τε–Σά 14:00–23:00<br>Κυ 13:00–23:00<br>Δε–Τρ κλειστά</p>
+      <p class="en">Wed–Sat 2pm–11pm<br>Sun 1pm–11pm<br>Closed Mon–Tue</p></div>
+    <div class="card"><h3 class="gr">Πού θα μας βρείτε</h3><h3 class="en">Find us</h3>
+      <p>Μπιζανίου 1, Βούλα 166 73<br><a href="https://maps.google.com/?q=το+Ψαροπούλι+Βούλα">Google Maps →</a></p></div>
   </div>
 </section>
 
-<section id="info" style="background:var(--foam);padding:4rem 2rem;max-width:100%">
-  <div style="max-width:1000px;margin:0 auto">
-    <h2><span class="el">Πού θα μας βρείτε</span><span class="en">Where to find us</span></h2>
-    <div class="info-cards">
-      <div class="info-card">
-        <div class="icon">📍</div>
-        <h3><span class="el">Διεύθυνση</span><span class="en">Address</span></h3>
-        <p><a href="https://maps.google.com/?q=ψαροταβέρνα+Αθήνα" target="_blank">
-          <span class="el">Παραλία Φλοίσβου 22, Παλαιό Φάληρο</span>
-          <span class="en">22 Floisvos Waterfront, Paleo Faliro</span>
-        </a></p>
-      </div>
-      <div class="info-card">
-        <div class="icon">📞</div>
-        <h3><span class="el">Τηλέφωνο</span><span class="en">Phone</span></h3>
-        <p><a href="tel:+302109000222">+30 210 900 0222</a></p>
-      </div>
-      <div class="info-card">
-        <div class="icon">🕐</div>
-        <h3><span class="el">Ώρες</span><span class="en">Hours</span></h3>
-        <p class="el">Τρ–Κυρ 12:00–23:00</p>
-        <p class="en">Tue–Sun 12:00–23:00</p>
-      </div>
-      <div class="info-card">
-        <div class="icon">🚢</div>
-        <h3><span class="el">Θέα θάλασσα</span><span class="en">Sea view</span></h3>
-        <p class="el">Τραπέζια δίπλα στη θάλασσα</p>
-        <p class="en">Tables right by the sea</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="booking" style="max-width:1000px;margin:0 auto;padding:4rem 2rem">
-  <h2><span class="el">Κράτηση Τραπεζιού</span><span class="en">Table Booking</span></h2>
-  <div class="form-wrap">
-    <form action="https://formsubmit.co/demo@example.com" method="POST">
-      <input type="hidden" name="_subject" value="Νέα κράτηση - Ψαροπούλι">
-      <input type="hidden" name="_captcha" value="false">
-      <div class="form-row">
-        <div class="form-group">
-          <label><span class="el">Ονοματεπώνυμο</span><span class="en">Full name</span></label>
-          <input type="text" name="name" required>
-        </div>
-        <div class="form-group">
-          <label><span class="el">Τηλέφωνο</span><span class="en">Phone</span></label>
-          <input type="tel" name="phone" required>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label><span class="el">Ημερομηνία</span><span class="en">Date</span></label>
-          <input type="date" name="date" required>
-        </div>
-        <div class="form-group">
-          <label><span class="el">Ώρα</span><span class="en">Time</span></label>
-          <select name="time">
-            <option>12:00</option><option>12:30</option><option>13:00</option>
-            <option>13:30</option><option>14:00</option><option>19:00</option>
-            <option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label><span class="el">Αριθμός ατόμων</span><span class="en">Number of guests</span></label>
-        <select name="guests">
-          <option>2</option><option>3</option><option>4</option><option>5</option>
-          <option>6</option><option>7-10</option><option>10+</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label><span class="el">Θέλετε τραπέζι με θέα;</span><span class="en">Sea view table preference?</span></label>
-        <select name="seaview">
-          <option value="yes"><span class="el">Ναι, παρακαλώ</span><span class="en">Yes please</span></option>
-          <option value="any"><span class="el">Δεν με πειράζει</span><span class="en">No preference</span></option>
-        </select>
-      </div>
-      <button type="submit"><span class="el">Αποστολή Κράτησης</span><span class="en">Send Booking</span></button>
-    </form>
-  </div>
+<section id="booking" style="padding-top:0">
+  <div class="kicker"><span class="gr">Κρατήσεις</span><span class="en">Reservations</span></div>
+  <h2 class="gr">Κλείστε τραπέζι</h2><h2 class="en">Book a table</h2>
+  <form action="https://formsubmit.co/konstantinosparginos@gmail.com" method="POST">
+    <input type="hidden" name="_subject" value="Κράτηση — το Ψαροπούλι">
+    <input type="hidden" name="_captcha" value="false">
+    <input name="name" required placeholder="Όνομα / Name">
+    <input name="phone" required placeholder="Τηλέφωνο / Phone">
+    <div style="display:flex;gap:10px"><input type="date" name="date" required style="flex:1"><input type="time" name="time" required style="flex:1"></div>
+    <select name="guests"><option>2 άτομα / guests</option><option>3</option><option>4</option><option>5</option><option>6+</option></select>
+    <button type="submit"><span class="gr">Αποστολή κράτησης</span><span class="en">Send reservation</span></button>
+  </form>
 </section>
 
 <footer>
-  <p>© 2025 το Ψαροπούλι &nbsp;|&nbsp; <a href="tel:+302109000222">+30 210 900 0222</a> &nbsp;|&nbsp;
-  <a href="https://maps.google.com/?q=ψαροταβέρνα+Αθήνα" target="_blank">Google Maps</a></p>
-  <p style="margin-top:.5rem;color:#456;font-size:.8rem">Demo site by <a href="/">KP Demo Sites</a></p>
+  το Ψαροπούλι · Μπιζανίου 1, Βούλα · <a href="tel:+302108953986">210 895 3986</a><br>
+  <span style="opacity:.55;font-size:12px">Demo σχεδιασμένο από KP · kp-demos</span>
 </footer>
-<script>function toggleLang(){var h=document.documentElement;h.dataset.lang=h.dataset.lang==='el'?'en':'el'}</script>
 </body>
 </html>
-ENDHTML
+KPEOF
 
-# ── 8. Μυλοπόταμος ────────────────────────────────────────────────────────────
-cat > "$PUBLIC_DIR/milopotamos/index.html" << 'ENDHTML'
+cat > public/milopotamos/index.html << 'KPEOF'
 <!DOCTYPE html>
-<html lang="el" data-lang="el">
+<html lang="el">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ο Μυλοπόταμος — Παραδοσιακός Φούρνος</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ο Μυλοπόταμος · Παραδοσιακός φούρνος στη Βούλα</title>
+<meta name="description" content="Παραδοσιακός φούρνος στην πλατεία της Βούλας. Ζυμωτό ψωμί, ντίνκελ, πίτες, δίπλες, καφές — από τις 6 το πρωί, κάθε μέρα.">
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{--wheat:#c8821a;--cream:#fdf6e3;--brown:#3b2008;--green:#4a7c40;--light:#fffdf7}
-  body{font-family:'Segoe UI',sans-serif;background:var(--light);color:var(--brown)}
-  nav{background:var(--brown);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
-  nav .logo{color:#fde;font-size:1.4rem;font-weight:700;text-decoration:none}
-  nav .links a{color:#dca;text-decoration:none;margin-left:1.2rem;font-size:.95rem}
-  nav .links a:hover{color:#fff}
-  .lang-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fde;padding:.3rem .8rem;border-radius:20px;cursor:pointer;font-size:.85rem}
-  .hero{background:linear-gradient(135deg,var(--wheat) 0%,#8a5210 100%);color:#fff;text-align:center;padding:5rem 2rem}
-  .hero h1{font-size:3rem;margin-bottom:1rem;text-shadow:0 2px 8px rgba(0,0,0,.3)}
-  .hero p{font-size:1.2rem;opacity:.9;max-width:600px;margin:0 auto 2rem}
-  .hero .cta{display:inline-block;background:var(--cream);color:var(--brown);padding:.8rem 2rem;border-radius:30px;text-decoration:none;font-weight:700}
-  .hero .cta:hover{background:#fff}
-  .fresh-banner{background:var(--green);color:#fff;text-align:center;padding:.8rem 2rem;font-size:1rem}
-  .fresh-banner strong{color:#cfe8a0}
-  section{padding:4rem 2rem;max-width:1000px;margin:0 auto}
-  h2{font-size:1.9rem;color:var(--wheat);margin-bottom:1.5rem;text-align:center}
-  .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem}
-  .product{background:#fff;border-radius:10px;padding:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,.07);border-bottom:3px solid var(--wheat)}
-  .product .emoji{font-size:2rem;margin-bottom:.5rem}
-  .product h3{color:var(--brown);font-size:.95rem;font-weight:700;margin-bottom:.3rem}
-  .product p{font-size:.82rem;color:#776;margin-bottom:.5rem}
-  .product .price{font-weight:700;color:var(--wheat)}
-  .order-badge{display:inline-block;background:#e8f5e2;color:var(--green);font-size:.72rem;padding:.15rem .5rem;border-radius:10px;font-weight:700;margin-left:.3rem}
-  .info-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem}
-  .info-card{text-align:center;padding:1.5rem;background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  .info-card .icon{font-size:2rem;margin-bottom:.5rem}
-  .info-card h3{font-size:1rem;color:var(--wheat);margin-bottom:.3rem}
-  .info-card a{color:var(--wheat);text-decoration:none}
-  .form-wrap{background:#fff;border-radius:14px;padding:2rem;box-shadow:0 4px 16px rgba(0,0,0,.08);max-width:600px;margin:0 auto}
-  .form-group{margin-bottom:1.2rem}
-  label{display:block;font-size:.9rem;color:var(--brown);margin-bottom:.3rem;font-weight:600}
-  input,select,textarea{width:100%;padding:.7rem 1rem;border:1px solid #ddd;border-radius:8px;font-size:.95rem;font-family:inherit}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--wheat)}
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-  button[type=submit]{background:var(--wheat);color:#fff;border:none;padding:.8rem 2rem;border-radius:30px;font-size:1rem;font-weight:700;cursor:pointer;width:100%}
-  button[type=submit]:hover{background:#a66a12}
-  footer{background:var(--brown);color:#dca;text-align:center;padding:2rem;font-size:.9rem}
-  footer a{color:#f5c842;text-decoration:none}
-  [data-lang=en] .el{display:none}
-  [data-lang=el] .en{display:none}
-  @media(max-width:600px){.hero h1{font-size:2rem}.form-row{grid-template-columns:1fr}nav .links{display:none}}
+:root{--wheat:#C98A2B;--crust:#7A4A1E;--cream:#FBF7EF;--ink:#33261A;--soft:#F0E5D2}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui;background:var(--cream);color:var(--ink);line-height:1.6}
+h1,h2,h3{font-family:Gabarito,system-ui}
+.en{display:none}body.lang-en .en{display:revert}body.lang-en .gr{display:none}
+header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--soft)}
+.logo{font-family:Gabarito;font-weight:700;font-size:20px;color:var(--crust)}
+#lang{background:none;border:1px solid var(--crust);color:var(--crust);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:13px}
+.hero{text-align:center;padding:60px 20px 56px;background:radial-gradient(ellipse at top,#F6E9D2,var(--cream) 70%)}
+.hero h1{font-size:clamp(36px,8vw,56px);margin:0 0 8px;color:var(--crust)}
+.hero .since{color:var(--wheat);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+.hero p{max-width:540px;margin:10px auto 26px;font-size:17px;color:#5C4A35}
+.cta{display:inline-block;background:var(--crust);color:#fff;text-decoration:none;font-weight:600;border-radius:12px;padding:14px 26px;margin:4px 6px}
+.cta.ghost{background:transparent;border:1px solid var(--crust);color:var(--crust)}
+.openbar{background:var(--crust);color:#F6E9D2;text-align:center;padding:12px;font-weight:600;font-size:15px}
+section{max-width:860px;margin:0 auto;padding:48px 20px}
+.kicker{color:var(--wheat);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+h2{font-size:30px;margin:6px 0 18px;color:var(--crust)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--soft);border-radius:14px;padding:18px}
+.card h3{margin:0 0 6px;font-size:17px;color:var(--crust)}
+.card p{margin:0;font-size:14px;color:#6B563E}
+blockquote{background:#fff;border-left:4px solid var(--wheat);border-radius:0 12px 12px 0;padding:14px 18px;margin:10px 0;font-style:italic}
+blockquote small{display:block;font-style:normal;color:#8A7458;margin-top:6px}
+form{display:grid;gap:10px}
+input,textarea{border:1px solid #DCCBAE;border-radius:10px;padding:12px;font-size:15px;font-family:inherit;background:#fff;width:100%}
+button[type=submit]{background:var(--crust);color:#fff;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:600;cursor:pointer}
+footer{background:var(--ink);color:#D9C6A8;padding:34px 20px;text-align:center;font-size:14px}
+footer a{color:#fff}
 </style>
 </head>
 <body>
-<nav>
-  <a class="logo" href="/">← <span class="el">ο Μυλοπόταμος</span><span class="en">O Milopotamos</span></a>
-  <div class="links">
-    <a href="#products"><span class="el">Προϊόντα</span><span class="en">Products</span></a>
-    <a href="#info"><span class="el">Πληροφορίες</span><span class="en">Info</span></a>
-    <a href="#order"><span class="el">Παραγγελία</span><span class="en">Order</span></a>
-  </div>
-  <button class="lang-btn" onclick="toggleLang()">EN / ΕΛ</button>
-</nav>
+<header>
+  <div class="logo">ο Μυλοπόταμος</div>
+  <button id="lang" onclick="document.body.classList.toggle('lang-en');this.textContent=document.body.classList.contains('lang-en')?'ΕΛ':'EN'">EN</button>
+</header>
 
 <div class="hero">
-  <h1>🍞 <span class="el">ο Μυλοπόταμος</span><span class="en">O Milopotamos</span></h1>
-  <p class="el">Παραδοσιακός φούρνος από το 1962 — ψωμί που μυρίζει αγάπη</p>
-  <p class="en">Traditional bakery since 1962 — bread baked with love</p>
-  <a class="cta" href="#order"><span class="el">Παράγγειλε online</span><span class="en">Order online</span></a>
+  <div class="since"><span class="gr">Παραδοσιακός φούρνος · Πλατεία Βούλας</span><span class="en">Traditional bakery · Voula square</span></div>
+  <h1>ο Μυλοπόταμος</h1>
+  <p class="gr">Από τους πιο παλιούς φούρνους της γειτονιάς. Ζυμωτό ψωμί, ζεστές πίτες και γλυκά, ψημένα κάθε πρωί από τις 6 — με την ίδια φροντίδα, χρόνια τώρα.</p>
+  <p class="en">One of the neighbourhood's oldest bakeries. Hand-kneaded bread, warm pies and sweets, baked fresh every morning from 6am — with the same care, year after year.</p>
+  <a class="cta" href="#order"><span class="gr">Παραγγελία για παραλαβή</span><span class="en">Order for pickup</span></a>
+  <a class="cta ghost" href="tel:+302108958080">☎ 210 895 8080</a>
 </div>
 
-<div class="fresh-banner">
-  🌾 <span class="el"><strong>Φρεσκοψημένα σήμερα:</strong> Σταρένιο, Σικάλεως, Τσουρέκι, Κουλούρι Θεσσαλονίκης</span>
-  <span class="en"><strong>Fresh today:</strong> Wheat loaf, Rye bread, Sweet brioche, Thessaloniki sesame ring</span>
-</div>
+<div class="openbar"><span class="gr">Ανοιχτά κάθε μέρα 6:00 – 21:00</span><span class="en">Open daily 6am – 9pm</span></div>
 
-<section id="products">
-  <h2><span class="el">Τα Προϊόντα μας</span><span class="en">Our Products</span></h2>
-  <div class="products-grid">
-    <div class="product">
-      <div class="emoji">🍞</div>
-      <h3><span class="el">Χωριάτικο ψωμί</span><span class="en">Village bread</span></h3>
-      <p class="el">Σταρένιο, χειροποίητο, 1 κιλό</p><p class="en">Wheat, handmade, 1kg loaf</p>
-      <div class="price">3,50 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🥐</div>
-      <h3><span class="el">Κρουασάν βουτύρου</span><span class="en">Butter croissant</span></h3>
-      <p class="el">Τριπλής βούτυρου, τραγανό</p><p class="en">Triple butter, flaky &amp; crispy</p>
-      <div class="price">2,20 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🥧</div>
-      <h3><span class="el">Τυρόπιτα</span><span class="en">Cheese pie</span></h3>
-      <p class="el">Φέτα &amp; τριμμένο τυρί, χειροποίητη</p><p class="en">Feta &amp; mixed cheese, handmade</p>
-      <div class="price">2,80 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🍫</div>
-      <h3><span class="el">Σοκολατένιο τσουρέκι</span><span class="en">Chocolate brioche</span></h3>
-      <p class="el">Τριπλό τσουρέκι με σοκολάτα</p><p class="en">Triple-weave brioche with chocolate</p>
-      <div class="price">5,50 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🫓</div>
-      <h3><span class="el">Κουλούρι Θεσσαλονίκης</span><span class="en">Sesame ring</span></h3>
-      <p class="el">Κλασικό, πλούσιο σε σουσάμι</p><p class="en">Classic, generously coated in sesame</p>
-      <div class="price">0,80 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🎂</div>
-      <h3><span class="el">Κέικ παραγγελία</span><span class="en">Custom cake</span> <span class="order-badge">ΠΡΟΠΑΡ.</span></h3>
-      <p class="el">Κέικ &amp; τούρτες για κάθε περίσταση</p><p class="en">Cakes &amp; tarts for any occasion</p>
-      <div class="price"><span class="el">από</span><span class="en">from</span> 25 €</div>
-    </div>
+<section>
+  <div class="kicker"><span class="gr">Από τον φούρνο μας</span><span class="en">From our oven</span></div>
+  <h2 class="gr">Ψημένα με μεράκι</h2><h2 class="en">Baked with care</h2>
+  <div class="grid">
+    <div class="card"><h3 class="gr">Ψωμιά</h3><h3 class="en">Breads</h3><p class="gr">Ζυμωτό, προζύμι, ντίνκελ, πολύσπορο</p><p class="en">Hand-kneaded, sourdough, dinkel, multigrain</p></div>
+    <div class="card"><h3 class="gr">Πίτες</h3><h3 class="en">Pies</h3><p class="gr">Τυρόπιτα, σπανακόπιτα — ζεστές όλη μέρα</p><p class="en">Cheese &amp; spinach pies — warm all day</p></div>
+    <div class="card"><h3 class="gr">Γλυκά</h3><h3 class="en">Sweets</h3><p class="gr">Δίπλες «σαν της γιαγιάς», σιροπιαστά</p><p class="en">Grandma-style diples, syrup sweets</p></div>
+    <div class="card"><h3 class="gr">Καφές</h3><h3 class="en">Coffee</h3><p class="gr">Φρέσκος καφές για το δρόμο</p><p class="en">Fresh coffee to go</p></div>
   </div>
 </section>
 
-<section id="info" style="background:var(--cream);padding:4rem 2rem;max-width:100%">
-  <div style="max-width:1000px;margin:0 auto">
-    <h2><span class="el">Πού θα μας βρείτε</span><span class="en">Find Us</span></h2>
-    <div class="info-cards">
-      <div class="info-card">
-        <div class="icon">📍</div>
-        <h3><span class="el">Διεύθυνση</span><span class="en">Address</span></h3>
-        <p><a href="https://maps.google.com/?q=φούρνος+παραδοσιακός+Αθήνα" target="_blank">
-          <span class="el">Αγίου Νικολάου 14, Ηράκλειο Αττικής</span>
-          <span class="en">14 Agios Nikolaos St, Iraklio Attica</span>
-        </a></p>
-      </div>
-      <div class="info-card">
-        <div class="icon">📞</div>
-        <h3><span class="el">Τηλέφωνο</span><span class="en">Phone</span></h3>
-        <p><a href="tel:+302109000333">+30 210 900 0333</a></p>
-      </div>
-      <div class="info-card">
-        <div class="icon">🕐</div>
-        <h3><span class="el">Ώρες</span><span class="en">Hours</span></h3>
-        <p class="el">Καθημερινά 06:30 – 20:00</p>
-        <p class="en">Daily 06:30 – 20:00</p>
-      </div>
-      <div class="info-card">
-        <div class="icon">🚚</div>
-        <h3><span class="el">Διανομή</span><span class="en">Delivery</span></h3>
-        <p class="el">Δωρεάν άνω των 15 €</p>
-        <p class="en">Free delivery over €15</p>
-      </div>
-    </div>
-  </div>
+<section style="padding-top:0">
+  <blockquote><span class="gr">«Οι δίπλες του, οι καλύτερες που έχω φάει μετά της γιαγιάς μου.»</span><span class="en">"The best diples I've had since my grandmother's."</span><small>— Google review</small></blockquote>
+  <blockquote><span class="gr">«Φρέσκο ψωμί καθημερινά και προσωπικό με χαμόγελο — γι' αυτό ξαναγυρνάμε.»</span><span class="en">"Daily fresh bread and staff with a smile — that's why we keep coming back."</span><small>— Google review</small></blockquote>
 </section>
 
-<section id="order" style="max-width:1000px;margin:0 auto;padding:4rem 2rem">
-  <h2><span class="el">Παράγγειλε Online</span><span class="en">Order Online</span></h2>
-  <div class="form-wrap">
-    <form action="https://formsubmit.co/demo@example.com" method="POST">
-      <input type="hidden" name="_subject" value="Νέα παραγγελία - Μυλοπόταμος">
-      <input type="hidden" name="_captcha" value="false">
-      <div class="form-row">
-        <div class="form-group">
-          <label><span class="el">Όνομα</span><span class="en">Name</span></label>
-          <input type="text" name="name" required>
-        </div>
-        <div class="form-group">
-          <label><span class="el">Τηλέφωνο</span><span class="en">Phone</span></label>
-          <input type="tel" name="phone" required>
-        </div>
-      </div>
-      <div class="form-group">
-        <label><span class="el">Διεύθυνση παράδοσης</span><span class="en">Delivery address</span></label>
-        <input type="text" name="address" required>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label><span class="el">Ημερομηνία παράδοσης</span><span class="en">Delivery date</span></label>
-          <input type="date" name="date" required>
-        </div>
-        <div class="form-group">
-          <label><span class="el">Ώρα παράδοσης</span><span class="en">Delivery time</span></label>
-          <select name="time">
-            <option>07:00–09:00</option><option>09:00–11:00</option>
-            <option>11:00–13:00</option><option>13:00–15:00</option>
-            <option>15:00–17:00</option><option>17:00–20:00</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label><span class="el">Προϊόντα &amp; ποσότητες</span><span class="en">Products &amp; quantities</span></label>
-        <textarea name="order" rows="4" required placeholder="π.χ. 2× χωριάτικο ψωμί, 4× τυρόπιτα, 1× τσουρέκι..."></textarea>
-      </div>
-      <button type="submit"><span class="el">Αποστολή Παραγγελίας</span><span class="en">Send Order</span></button>
-    </form>
-  </div>
+<section id="order" style="padding-top:0">
+  <div class="kicker"><span class="gr">Παραγγελίες</span><span class="en">Orders</span></div>
+  <h2 class="gr">Παραγγείλετε από πριν</h2><h2 class="en">Order ahead</h2>
+  <p class="gr" style="margin-top:-8px;color:#6B563E">Για γιορτές, τσουρέκια, τούρτες ή μεγάλες ποσότητες — στείλτε μας τι θέλετε και πότε.</p>
+  <p class="en" style="margin-top:-8px;color:#6B563E">For celebrations, tsoureki, cakes or larger quantities — tell us what you need and when.</p>
+  <form action="https://formsubmit.co/konstantinosparginos@gmail.com" method="POST">
+    <input type="hidden" name="_subject" value="Παραγγελία — ο Μυλοπόταμος">
+    <input type="hidden" name="_captcha" value="false">
+    <input name="name" required placeholder="Όνομα / Name">
+    <input name="phone" required placeholder="Τηλέφωνο / Phone">
+    <input type="date" name="pickup" required>
+    <textarea name="order" rows="3" required placeholder="Τι θα θέλατε; / What would you like?"></textarea>
+    <button type="submit"><span class="gr">Αποστολή παραγγελίας</span><span class="en">Send order</span></button>
+  </form>
 </section>
 
 <footer>
-  <p>© 2025 ο Μυλοπόταμος &nbsp;|&nbsp; <a href="tel:+302109000333">+30 210 900 0333</a> &nbsp;|&nbsp;
-  <a href="https://maps.google.com/?q=φούρνος+Αθήνα" target="_blank">Google Maps</a></p>
-  <p style="margin-top:.5rem;color:#876;font-size:.8rem">Demo site by <a href="/">KP Demo Sites</a></p>
+  ο Μυλοπόταμος · Πλαστήρα 6, Βούλα · <a href="tel:+302108958080">210 895 8080</a><br>
+  <span style="opacity:.55;font-size:12px">Demo σχεδιασμένο από KP · kp-demos</span>
 </footer>
-<script>function toggleLang(){var h=document.documentElement;h.dataset.lang=h.dataset.lang==='el'?'en':'el'}</script>
 </body>
 </html>
-ENDHTML
+KPEOF
 
-# ── 9. Outreach emails ─────────────────────────────────────────────────────────
-cat > "$DEPLOY_DIR/emails/outreach-emails.md" << 'ENDEMAIL'
-# Outreach Emails — KP Demo Sites
+cat > emails/outreach-emails.md << 'KPEOF'
+# Έτοιμα emails (στείλε από το προσωπικό σου Gmail)
+Αντικατέστησε ΜΟΝΟ το PROJECT με το όνομα του Firebase project σου.
 
 ---
+## 1. Το Βουλιώτικο — tovouliotiko (Instagram DM ή email αν βρεις)
+**Θέμα:** Σας έφτιαξα μια ιστοσελίδα — ρίξτε μια ματιά
 
-## 1. Το Βουλιώτικο
+Καλησπέρα σας,
 
-**Θέμα:** Δωρεάν demo website για το Βουλιώτικο — ζωντανό τώρα!
+με λένε Κωνσταντίνο και μένω εδώ, στη Βούλα. Είμαι από αυτούς που έρχονται
+για το καλαμαράκι και τις παστές γαρίδες — και πρόσεξα ότι, ενώ έχετε από
+τις καλύτερες κριτικές της περιοχής, δεν έχετε δική σας ιστοσελίδα.
 
-Καλησπέρα,
+Σας έφτιαξα λοιπόν μία, χωρίς καμία υποχρέωση, για να δείτε πώς θα έδειχνε:
+https://PROJECT.web.app/vouliotiko
 
-Είμαι ο Κωνσταντίνος Παργινός, web developer με εξειδίκευση σε websites για εστιατόρια και επιχειρήσεις εστίασης.
+Έχει κρατήσεις online, μενού, ωράριο, σύνδεση με το efood — όλα στα ελληνικά
+και στα αγγλικά. Αν σας αρέσει, γίνεται δική σας με 150€ εφάπαξ. Προαιρετικά:
+επαγγελματικό email και φιλοξενία +50€, e-shop +250€, online πληρωμές ανάλογα
+με τις ανάγκες σας. Μπορώ επίσης να ψηφιοποιήσω κρατήσεις ή ό,τι άλλο
+χρειάζεται η καθημερινότητα του μαγαζιού.
 
-Δημιούργησα ένα **δωρεάν demo** για το Βουλιώτικο — ένα σύγχρονο, responsive website με:
-✅ Online κρατήσεις τραπεζιού
-✅ Ψηφιακό μενού
-✅ Δίγλωσση υποστήριξη (Ελληνικά / Αγγλικά) για τουρίστες
-✅ Κουμπί κλήσης & Google Maps
+Ευχαρίστως να περάσω από το κατάστημα να τα πούμε — ή τηλεφωνικά, όποτε σας
+βολεύει. Αν προτιμάτε επικοινωνία στα αγγλικά, κανένα πρόβλημα.
 
-Μπορείτε να το δείτε ζωντανά εδώ: [URL]
+Καλή συνέχεια,
+Κωνσταντίνος (KP)
+[τηλέφωνό σου]
 
-Το κόστος μετατροπής σε πλήρη ιστοσελίδα ξεκινά από **€350** (εφάπαξ) + €15/μήνα hosting.
+---
+## 2. το Ψαροπούλι
+**Θέμα:** Μια ιστοσελίδα για το Ψαροπούλι — με online κρατήσεις
 
-Θα χαρώ να το συζητήσουμε. Καλέστε με ή απαντήστε σε αυτό το email.
+Καλησπέρα σας,
+
+με λένε Κωνσταντίνο, μένω στη Βούλα. Ξέρω ότι ο χώρος σας γεμίζει και ότι
+τα Σαββατοκύριακα η κράτηση είναι απαραίτητη — γι' αυτό σας έφτιαξα μια
+ιστοσελίδα όπου οι πελάτες κλείνουν τραπέζι μόνοι τους, μέρα-νύχτα:
+https://PROJECT.web.app/psaropouli
+
+Δείτε την με την ησυχία σας — έχει την ψαριά, το ωράριο, κρατήσεις, σε
+ελληνικά και αγγλικά για τους ξένους επισκέπτες. Αν σας αρέσει, γίνεται
+δική σας με 150€ εφάπαξ. Προαιρετικά: επαγγελματικό email + φιλοξενία +50€,
+e-shop +250€, online πληρωμές κατόπιν συζήτησης.
+
+Χωρίς καμία δέσμευση — ευχαρίστως να περάσω να γνωριστούμε. Αν προτιμάτε
+αγγλικά, κανένα πρόβλημα.
 
 Με εκτίμηση,
-Κωνσταντίνος Παργινός
-📱 +30 697 XXX XXXX
+Κωνσταντίνος (KP)
+[τηλέφωνό σου]
 
 ---
-
-## 2. το Ψαροπούλι
-
-**Θέμα:** Δωρεάν demo website για την ψαροταβέρνα σας
-
-Καλησπέρα,
-
-Δημιούργησα ένα **δωρεάν demo website** ειδικά για την ψαροταβέρνα σας, με:
-✅ «Σημερινή σύλληψη» — ενότητα που ανανεώνεται εύκολα
-✅ Online κράτηση τραπεζιού (με επιλογή θέας θάλασσα)
-✅ Responsive design για κινητά
-✅ Αγγλική έκδοση για ξένους επισκέπτες
-
-Δείτε το εδώ: [URL]
-
-Πακέτα από **€350** εφάπαξ. Δεν χρειάζεστε τεχνικές γνώσεις — αναλαμβάνω τα πάντα.
-
-Κωνσταντίνος Παργινός | Web Developer
-📱 +30 697 XXX XXXX
-
----
-
 ## 3. ο Μυλοπόταμος
+**Θέμα:** Έφτιαξα μια ιστοσελίδα για τον φούρνο σας
 
-**Θέμα:** Δωρεάν demo για τον φούρνο σας — με online παραγγελίες!
+Καλημέρα σας,
 
-Καλησπέρα,
+με λένε Κωνσταντίνο και είμαι πελάτης σας — από τους πιο παλιούς και
+αγαπημένους φούρνους της Βούλας λείπει μόνο ένα πράγμα: μια δική σας
+ιστοσελίδα. Σας έφτιαξα μία για να τη δείτε:
+https://PROJECT.web.app/milopotamos
 
-Ξέρω ότι ο φούρνος σας έχει πολλούς πιστούς πελάτες. Φανταστείτε να μπορούν να **παραγγέλνουν online** πριν περάσουν να παραλάβουν!
+Έχει τα προϊόντα σας, το ωράριο και φόρμα για παραγγελίες από πριν
+(τσουρέκια, δίπλες, γιορτές) — ελληνικά και αγγλικά. Αν σας αρέσει,
+γίνεται δική σας με 150€ εφάπαξ. Προαιρετικά: επαγγελματικό email +
+φιλοξενία +50€, e-shop +250€.
 
-Δημιούργησα ένα demo website για σας με:
-✅ Online φόρμα παραγγελίας με επιλογή ωραρίου παράδοσης
-✅ Ψηφιακό τιμοκατάλογο προϊόντων
-✅ Ανακοίνωση «φρεσκοψημένων σήμερα»
-✅ Κινητό-friendly design
+Περνάω ούτως ή άλλως για ψωμί — πείτε μου πότε σας βολεύει να τα πούμε
+από κοντά. Αν προτιμάτε αγγλικά, κανένα πρόβλημα.
 
-Δείτε το: [URL]
+Καλή συνέχεια,
+Κωνσταντίνος (KP)
+[τηλέφωνό σου]
+KPEOF
 
-Έτοιμο website από **€300** εφάπαξ. Χωρίς μηνιαίες αμοιβές τον πρώτο χρόνο.
+cat > .firebaserc << KPEOF
+{ "projects": { "default": "$PROJECT_ID" } }
+KPEOF
 
-Κωνσταντίνος Παργινός
-📱 +30 697 XXX XXXX
-ENDEMAIL
-
-# ── 10. Firebase project creation & deploy ────────────────────────────────────
-cd "$DEPLOY_DIR"
-
-echo ""
-echo "▶ Checking Firebase login status..."
-if ! firebase login:list 2>/dev/null | grep -q "@"; then
-  echo "  Not logged in. Starting login..."
-  firebase login --no-localhost
-fi
-
-echo "▶ Creating Firebase project: $PROJECT_ID ..."
-CREATE_OUTPUT=$(firebase projects:create "$PROJECT_ID" --display-name "KP Demo Sites" 2>&1) && {
-  echo "  ✓ Project created"
-} || {
-  echo "  ℹ $CREATE_OUTPUT"
-  echo "  Continuing — project may already exist or creation failed (quota/billing)"
-  echo "  Attempting to use project: $PROJECT_ID"
-}
-
-echo "▶ Deploying to Firebase Hosting..."
+command -v firebase >/dev/null || npm i -g firebase-tools
+firebase projects:list >/dev/null 2>&1 || firebase login
+firebase projects:create "$PROJECT_ID" --display-name "KP Demos" 2>/dev/null || echo "Project exists or creation skipped — using $PROJECT_ID"
 firebase deploy --only hosting --project "$PROJECT_ID"
 
-HOSTING_URL="https://$PROJECT_ID.web.app"
-
 echo ""
-echo "================================================"
-echo "  ✅ DEPLOYMENT COMPLETE"
-echo "================================================"
-echo ""
-echo "  Live URLs:"
-echo "  🏠  Hub:          $HOSTING_URL"
-echo "  🍷  Βουλιώτικο:  $HOSTING_URL/vouliotiko"
-echo "  🐟  Ψαροπούλι:   $HOSTING_URL/psaropouli"
-echo "  🍞  Μυλοπόταμος: $HOSTING_URL/milopotamos"
-echo ""
-echo "  Outreach emails: $DEPLOY_DIR/emails/outreach-emails.md"
-echo "================================================"
+echo "================ LIVE LINKS ================"
+echo "https://$PROJECT_ID.web.app/vouliotiko"
+echo "https://$PROJECT_ID.web.app/psaropouli"
+echo "https://$PROJECT_ID.web.app/milopotamos"
+echo "Emails: kp-sites/emails/outreach-emails.md (βάλε το PROJECT URL + τηλέφωνό σου)"

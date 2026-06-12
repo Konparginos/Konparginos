@@ -1,200 +1,93 @@
 <!DOCTYPE html>
-<html lang="el" data-lang="el">
+<html lang="el">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ο Μυλοπόταμος — Παραδοσιακός Φούρνος</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ο Μυλοπόταμος · Παραδοσιακός φούρνος στη Βούλα</title>
+<meta name="description" content="Παραδοσιακός φούρνος στην πλατεία της Βούλας. Ζυμωτό ψωμί, ντίνκελ, πίτες, δίπλες, καφές — από τις 6 το πρωί, κάθε μέρα.">
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{--wheat:#c8821a;--cream:#fdf6e3;--brown:#3b2008;--green:#4a7c40;--light:#fffdf7}
-  body{font-family:'Segoe UI',sans-serif;background:var(--light);color:var(--brown)}
-  nav{background:var(--brown);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
-  nav .logo{color:#fde;font-size:1.4rem;font-weight:700;text-decoration:none}
-  nav .links a{color:#dca;text-decoration:none;margin-left:1.2rem;font-size:.95rem}
-  nav .links a:hover{color:#fff}
-  .lang-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fde;padding:.3rem .8rem;border-radius:20px;cursor:pointer;font-size:.85rem}
-  .hero{background:linear-gradient(135deg,var(--wheat) 0%,#8a5210 100%);color:#fff;text-align:center;padding:5rem 2rem}
-  .hero h1{font-size:3rem;margin-bottom:1rem;text-shadow:0 2px 8px rgba(0,0,0,.3)}
-  .hero p{font-size:1.2rem;opacity:.9;max-width:600px;margin:0 auto 2rem}
-  .hero .cta{display:inline-block;background:var(--cream);color:var(--brown);padding:.8rem 2rem;border-radius:30px;text-decoration:none;font-weight:700}
-  .hero .cta:hover{background:#fff}
-  .fresh-banner{background:var(--green);color:#fff;text-align:center;padding:.8rem 2rem;font-size:1rem}
-  .fresh-banner strong{color:#cfe8a0}
-  section{padding:4rem 2rem;max-width:1000px;margin:0 auto}
-  h2{font-size:1.9rem;color:var(--wheat);margin-bottom:1.5rem;text-align:center}
-  .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem}
-  .product{background:#fff;border-radius:10px;padding:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,.07);border-bottom:3px solid var(--wheat)}
-  .product .emoji{font-size:2rem;margin-bottom:.5rem}
-  .product h3{color:var(--brown);font-size:.95rem;font-weight:700;margin-bottom:.3rem}
-  .product p{font-size:.82rem;color:#776;margin-bottom:.5rem}
-  .product .price{font-weight:700;color:var(--wheat)}
-  .order-badge{display:inline-block;background:#e8f5e2;color:var(--green);font-size:.72rem;padding:.15rem .5rem;border-radius:10px;font-weight:700;margin-left:.3rem}
-  .info-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem}
-  .info-card{text-align:center;padding:1.5rem;background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  .info-card .icon{font-size:2rem;margin-bottom:.5rem}
-  .info-card h3{font-size:1rem;color:var(--wheat);margin-bottom:.3rem}
-  .info-card a{color:var(--wheat);text-decoration:none}
-  .form-wrap{background:#fff;border-radius:14px;padding:2rem;box-shadow:0 4px 16px rgba(0,0,0,.08);max-width:600px;margin:0 auto}
-  .form-group{margin-bottom:1.2rem}
-  label{display:block;font-size:.9rem;color:var(--brown);margin-bottom:.3rem;font-weight:600}
-  input,select,textarea{width:100%;padding:.7rem 1rem;border:1px solid #ddd;border-radius:8px;font-size:.95rem;font-family:inherit}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--wheat)}
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-  button[type=submit]{background:var(--wheat);color:#fff;border:none;padding:.8rem 2rem;border-radius:30px;font-size:1rem;font-weight:700;cursor:pointer;width:100%}
-  button[type=submit]:hover{background:#a66a12}
-  footer{background:var(--brown);color:#dca;text-align:center;padding:2rem;font-size:.9rem}
-  footer a{color:#f5c842;text-decoration:none}
-  [data-lang=en] .el{display:none}
-  [data-lang=el] .en{display:none}
-  @media(max-width:600px){.hero h1{font-size:2rem}.form-row{grid-template-columns:1fr}nav .links{display:none}}
+:root{--wheat:#C98A2B;--crust:#7A4A1E;--cream:#FBF7EF;--ink:#33261A;--soft:#F0E5D2}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui;background:var(--cream);color:var(--ink);line-height:1.6}
+h1,h2,h3{font-family:Gabarito,system-ui}
+.en{display:none}body.lang-en .en{display:revert}body.lang-en .gr{display:none}
+header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--soft)}
+.logo{font-family:Gabarito;font-weight:700;font-size:20px;color:var(--crust)}
+#lang{background:none;border:1px solid var(--crust);color:var(--crust);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:13px}
+.hero{text-align:center;padding:60px 20px 56px;background:radial-gradient(ellipse at top,#F6E9D2,var(--cream) 70%)}
+.hero h1{font-size:clamp(36px,8vw,56px);margin:0 0 8px;color:var(--crust)}
+.hero .since{color:var(--wheat);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+.hero p{max-width:540px;margin:10px auto 26px;font-size:17px;color:#5C4A35}
+.cta{display:inline-block;background:var(--crust);color:#fff;text-decoration:none;font-weight:600;border-radius:12px;padding:14px 26px;margin:4px 6px}
+.cta.ghost{background:transparent;border:1px solid var(--crust);color:var(--crust)}
+.openbar{background:var(--crust);color:#F6E9D2;text-align:center;padding:12px;font-weight:600;font-size:15px}
+section{max-width:860px;margin:0 auto;padding:48px 20px}
+.kicker{color:var(--wheat);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+h2{font-size:30px;margin:6px 0 18px;color:var(--crust)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--soft);border-radius:14px;padding:18px}
+.card h3{margin:0 0 6px;font-size:17px;color:var(--crust)}
+.card p{margin:0;font-size:14px;color:#6B563E}
+blockquote{background:#fff;border-left:4px solid var(--wheat);border-radius:0 12px 12px 0;padding:14px 18px;margin:10px 0;font-style:italic}
+blockquote small{display:block;font-style:normal;color:#8A7458;margin-top:6px}
+form{display:grid;gap:10px}
+input,textarea{border:1px solid #DCCBAE;border-radius:10px;padding:12px;font-size:15px;font-family:inherit;background:#fff;width:100%}
+button[type=submit]{background:var(--crust);color:#fff;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:600;cursor:pointer}
+footer{background:var(--ink);color:#D9C6A8;padding:34px 20px;text-align:center;font-size:14px}
+footer a{color:#fff}
 </style>
 </head>
 <body>
-<nav>
-  <a class="logo" href="/">← <span class="el">ο Μυλοπόταμος</span><span class="en">O Milopotamos</span></a>
-  <div class="links">
-    <a href="#products"><span class="el">Προϊόντα</span><span class="en">Products</span></a>
-    <a href="#info"><span class="el">Πληροφορίες</span><span class="en">Info</span></a>
-    <a href="#order"><span class="el">Παραγγελία</span><span class="en">Order</span></a>
-  </div>
-  <button class="lang-btn" onclick="toggleLang()">EN / ΕΛ</button>
-</nav>
+<header>
+  <div class="logo">ο Μυλοπόταμος</div>
+  <button id="lang" onclick="document.body.classList.toggle('lang-en');this.textContent=document.body.classList.contains('lang-en')?'ΕΛ':'EN'">EN</button>
+</header>
 
 <div class="hero">
-  <h1>🍞 <span class="el">ο Μυλοπόταμος</span><span class="en">O Milopotamos</span></h1>
-  <p class="el">Παραδοσιακός φούρνος από το 1962 — ψωμί που μυρίζει αγάπη</p>
-  <p class="en">Traditional bakery since 1962 — bread baked with love</p>
-  <a class="cta" href="#order"><span class="el">Παράγγειλε online</span><span class="en">Order online</span></a>
+  <div class="since"><span class="gr">Παραδοσιακός φούρνος · Πλατεία Βούλας</span><span class="en">Traditional bakery · Voula square</span></div>
+  <h1>ο Μυλοπόταμος</h1>
+  <p class="gr">Από τους πιο παλιούς φούρνους της γειτονιάς. Ζυμωτό ψωμί, ζεστές πίτες και γλυκά, ψημένα κάθε πρωί από τις 6 — με την ίδια φροντίδα, χρόνια τώρα.</p>
+  <p class="en">One of the neighbourhood's oldest bakeries. Hand-kneaded bread, warm pies and sweets, baked fresh every morning from 6am — with the same care, year after year.</p>
+  <a class="cta" href="#order"><span class="gr">Παραγγελία για παραλαβή</span><span class="en">Order for pickup</span></a>
+  <a class="cta ghost" href="tel:+302108958080">☎ 210 895 8080</a>
 </div>
 
-<div class="fresh-banner">
-  🌾 <span class="el"><strong>Φρεσκοψημένα σήμερα:</strong> Σταρένιο, Σικάλεως, Τσουρέκι, Κουλούρι Θεσσαλονίκης</span>
-  <span class="en"><strong>Fresh today:</strong> Wheat loaf, Rye bread, Sweet brioche, Thessaloniki sesame ring</span>
-</div>
+<div class="openbar"><span class="gr">Ανοιχτά κάθε μέρα 6:00 – 21:00</span><span class="en">Open daily 6am – 9pm</span></div>
 
-<section id="products">
-  <h2><span class="el">Τα Προϊόντα μας</span><span class="en">Our Products</span></h2>
-  <div class="products-grid">
-    <div class="product">
-      <div class="emoji">🍞</div>
-      <h3><span class="el">Χωριάτικο ψωμί</span><span class="en">Village bread</span></h3>
-      <p class="el">Σταρένιο, χειροποίητο, 1 κιλό</p><p class="en">Wheat, handmade, 1kg loaf</p>
-      <div class="price">3,50 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🥐</div>
-      <h3><span class="el">Κρουασάν βουτύρου</span><span class="en">Butter croissant</span></h3>
-      <p class="el">Τριπλής βούτυρου, τραγανό</p><p class="en">Triple butter, flaky &amp; crispy</p>
-      <div class="price">2,20 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🥧</div>
-      <h3><span class="el">Τυρόπιτα</span><span class="en">Cheese pie</span></h3>
-      <p class="el">Φέτα &amp; τριμμένο τυρί, χειροποίητη</p><p class="en">Feta &amp; mixed cheese, handmade</p>
-      <div class="price">2,80 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🍫</div>
-      <h3><span class="el">Σοκολατένιο τσουρέκι</span><span class="en">Chocolate brioche</span></h3>
-      <p class="el">Τριπλό τσουρέκι με σοκολάτα</p><p class="en">Triple-weave brioche with chocolate</p>
-      <div class="price">5,50 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🫓</div>
-      <h3><span class="el">Κουλούρι Θεσσαλονίκης</span><span class="en">Sesame ring</span></h3>
-      <p class="el">Κλασικό, πλούσιο σε σουσάμι</p><p class="en">Classic, generously coated in sesame</p>
-      <div class="price">0,80 €</div>
-    </div>
-    <div class="product">
-      <div class="emoji">🎂</div>
-      <h3><span class="el">Κέικ παραγγελία</span><span class="en">Custom cake</span> <span class="order-badge">ΠΡΟΠΑΡ.</span></h3>
-      <p class="el">Κέικ &amp; τούρτες για κάθε περίσταση</p><p class="en">Cakes &amp; tarts for any occasion</p>
-      <div class="price"><span class="el">από</span><span class="en">from</span> 25 €</div>
-    </div>
+<section>
+  <div class="kicker"><span class="gr">Από τον φούρνο μας</span><span class="en">From our oven</span></div>
+  <h2 class="gr">Ψημένα με μεράκι</h2><h2 class="en">Baked with care</h2>
+  <div class="grid">
+    <div class="card"><h3 class="gr">Ψωμιά</h3><h3 class="en">Breads</h3><p class="gr">Ζυμωτό, προζύμι, ντίνκελ, πολύσπορο</p><p class="en">Hand-kneaded, sourdough, dinkel, multigrain</p></div>
+    <div class="card"><h3 class="gr">Πίτες</h3><h3 class="en">Pies</h3><p class="gr">Τυρόπιτα, σπανακόπιτα — ζεστές όλη μέρα</p><p class="en">Cheese &amp; spinach pies — warm all day</p></div>
+    <div class="card"><h3 class="gr">Γλυκά</h3><h3 class="en">Sweets</h3><p class="gr">Δίπλες «σαν της γιαγιάς», σιροπιαστά</p><p class="en">Grandma-style diples, syrup sweets</p></div>
+    <div class="card"><h3 class="gr">Καφές</h3><h3 class="en">Coffee</h3><p class="gr">Φρέσκος καφές για το δρόμο</p><p class="en">Fresh coffee to go</p></div>
   </div>
 </section>
 
-<section id="info" style="background:var(--cream);padding:4rem 2rem;max-width:100%">
-  <div style="max-width:1000px;margin:0 auto">
-    <h2><span class="el">Πού θα μας βρείτε</span><span class="en">Find Us</span></h2>
-    <div class="info-cards">
-      <div class="info-card">
-        <div class="icon">📍</div>
-        <h3><span class="el">Διεύθυνση</span><span class="en">Address</span></h3>
-        <p><a href="https://maps.google.com/?q=φούρνος+παραδοσιακός+Αθήνα" target="_blank">
-          <span class="el">Αγίου Νικολάου 14, Ηράκλειο Αττικής</span>
-          <span class="en">14 Agios Nikolaos St, Iraklio Attica</span>
-        </a></p>
-      </div>
-      <div class="info-card">
-        <div class="icon">📞</div>
-        <h3><span class="el">Τηλέφωνο</span><span class="en">Phone</span></h3>
-        <p><a href="tel:+302109000333">+30 210 900 0333</a></p>
-      </div>
-      <div class="info-card">
-        <div class="icon">🕐</div>
-        <h3><span class="el">Ώρες</span><span class="en">Hours</span></h3>
-        <p class="el">Καθημερινά 06:30 – 20:00</p>
-        <p class="en">Daily 06:30 – 20:00</p>
-      </div>
-      <div class="info-card">
-        <div class="icon">🚚</div>
-        <h3><span class="el">Διανομή</span><span class="en">Delivery</span></h3>
-        <p class="el">Δωρεάν άνω των 15 €</p>
-        <p class="en">Free delivery over €15</p>
-      </div>
-    </div>
-  </div>
+<section style="padding-top:0">
+  <blockquote><span class="gr">«Οι δίπλες του, οι καλύτερες που έχω φάει μετά της γιαγιάς μου.»</span><span class="en">"The best diples I've had since my grandmother's."</span><small>— Google review</small></blockquote>
+  <blockquote><span class="gr">«Φρέσκο ψωμί καθημερινά και προσωπικό με χαμόγελο — γι' αυτό ξαναγυρνάμε.»</span><span class="en">"Daily fresh bread and staff with a smile — that's why we keep coming back."</span><small>— Google review</small></blockquote>
 </section>
 
-<section id="order" style="max-width:1000px;margin:0 auto;padding:4rem 2rem">
-  <h2><span class="el">Παράγγειλε Online</span><span class="en">Order Online</span></h2>
-  <div class="form-wrap">
-    <form action="https://formsubmit.co/demo@example.com" method="POST">
-      <input type="hidden" name="_subject" value="Νέα παραγγελία - Μυλοπόταμος">
-      <input type="hidden" name="_captcha" value="false">
-      <div class="form-row">
-        <div class="form-group">
-          <label><span class="el">Όνομα</span><span class="en">Name</span></label>
-          <input type="text" name="name" required>
-        </div>
-        <div class="form-group">
-          <label><span class="el">Τηλέφωνο</span><span class="en">Phone</span></label>
-          <input type="tel" name="phone" required>
-        </div>
-      </div>
-      <div class="form-group">
-        <label><span class="el">Διεύθυνση παράδοσης</span><span class="en">Delivery address</span></label>
-        <input type="text" name="address" required>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label><span class="el">Ημερομηνία παράδοσης</span><span class="en">Delivery date</span></label>
-          <input type="date" name="date" required>
-        </div>
-        <div class="form-group">
-          <label><span class="el">Ώρα παράδοσης</span><span class="en">Delivery time</span></label>
-          <select name="time">
-            <option>07:00–09:00</option><option>09:00–11:00</option>
-            <option>11:00–13:00</option><option>13:00–15:00</option>
-            <option>15:00–17:00</option><option>17:00–20:00</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label><span class="el">Προϊόντα &amp; ποσότητες</span><span class="en">Products &amp; quantities</span></label>
-        <textarea name="order" rows="4" required placeholder="π.χ. 2× χωριάτικο ψωμί, 4× τυρόπιτα, 1× τσουρέκι..."></textarea>
-      </div>
-      <button type="submit"><span class="el">Αποστολή Παραγγελίας</span><span class="en">Send Order</span></button>
-    </form>
-  </div>
+<section id="order" style="padding-top:0">
+  <div class="kicker"><span class="gr">Παραγγελίες</span><span class="en">Orders</span></div>
+  <h2 class="gr">Παραγγείλετε από πριν</h2><h2 class="en">Order ahead</h2>
+  <p class="gr" style="margin-top:-8px;color:#6B563E">Για γιορτές, τσουρέκια, τούρτες ή μεγάλες ποσότητες — στείλτε μας τι θέλετε και πότε.</p>
+  <p class="en" style="margin-top:-8px;color:#6B563E">For celebrations, tsoureki, cakes or larger quantities — tell us what you need and when.</p>
+  <form action="https://formsubmit.co/konstantinosparginos@gmail.com" method="POST">
+    <input type="hidden" name="_subject" value="Παραγγελία — ο Μυλοπόταμος">
+    <input type="hidden" name="_captcha" value="false">
+    <input name="name" required placeholder="Όνομα / Name">
+    <input name="phone" required placeholder="Τηλέφωνο / Phone">
+    <input type="date" name="pickup" required>
+    <textarea name="order" rows="3" required placeholder="Τι θα θέλατε; / What would you like?"></textarea>
+    <button type="submit"><span class="gr">Αποστολή παραγγελίας</span><span class="en">Send order</span></button>
+  </form>
 </section>
 
 <footer>
-  <p>© 2025 ο Μυλοπόταμος &nbsp;|&nbsp; <a href="tel:+302109000333">+30 210 900 0333</a> &nbsp;|&nbsp;
-  <a href="https://maps.google.com/?q=φούρνος+Αθήνα" target="_blank">Google Maps</a></p>
-  <p style="margin-top:.5rem;color:#876;font-size:.8rem">Demo site by <a href="/">KP Demo Sites</a></p>
+  ο Μυλοπόταμος · Πλαστήρα 6, Βούλα · <a href="tel:+302108958080">210 895 8080</a><br>
+  <span style="opacity:.55;font-size:12px">Demo σχεδιασμένο από KP · kp-demos</span>
 </footer>
-<script>function toggleLang(){var h=document.documentElement;h.dataset.lang=h.dataset.lang==='el'?'en':'el'}</script>
 </body>
 </html>
