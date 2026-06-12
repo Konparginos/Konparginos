@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KP Demo Sites — Ελληνικά Εστιατόρια</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#0d1b2a;color:#e0e0e0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+  h1{font-size:2.2rem;text-align:center;color:#f5c842;margin-bottom:.5rem}
+  p{text-align:center;color:#9ab;margin-bottom:2.5rem;font-size:1.05rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;width:100%;max-width:900px}
+  .card{background:#162032;border-radius:14px;padding:2rem 1.5rem;text-align:center;text-decoration:none;color:inherit;border:1px solid #1e3a5f;transition:.2s}
+  .card:hover{transform:translateY(-4px);border-color:#f5c842}
+  .card .emoji{font-size:3rem;margin-bottom:.8rem}
+  .card h2{font-size:1.3rem;color:#f5c842;margin-bottom:.4rem}
+  .card p{font-size:.9rem;color:#8ab;margin:0}
+  footer{margin-top:3rem;color:#456;font-size:.8rem}
+</style>
+</head>
+<body>
+<h1>🍽️ KP Demo Restaurants</h1>
+<p>Three live demo websites built for Greek tavernas — click to explore</p>
+<div class="grid">
+  <a class="card" href="/vouliotiko">
+    <div class="emoji">🍷</div>
+    <h2>Το Βουλιώτικο</h2>
+    <p>Παραδοσιακή μεζεδοπωλείο — Traditional mezze taverna</p>
+  </a>
+  <a class="card" href="/psaropouli">
+    <div class="emoji">🐟</div>
+    <h2>το Ψαροπούλι</h2>
+    <p>Φρέσκα ψάρια καθημερινά — Fresh fish taverna by the sea</p>
+  </a>
+  <a class="card" href="/milopotamos">
+    <div class="emoji">🍞</div>
+    <h2>ο Μυλοπόταμος</h2>
+    <p>Παραδοσιακός φούρνος — Traditional bakery &amp; café</p>
+  </a>
+</div>
+<footer>Demo sites created by Konstantinos Parginos · Firebase Hosting</footer>
+</body>
+</html>

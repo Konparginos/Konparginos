@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="el" data-lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>το Ψαροπούλι — Ψαροταβέρνα</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--sea:#0a6b8a;--foam:#e8f6f9;--dark:#0a2332;--coral:#e05c35;--light:#f0fbff}
+  body{font-family:'Segoe UI',sans-serif;background:var(--light);color:var(--dark)}
+  nav{background:var(--sea);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+  nav .logo{color:#fff;font-size:1.4rem;font-weight:700;text-decoration:none}
+  nav .links a{color:#aee;text-decoration:none;margin-left:1.2rem;font-size:.95rem}
+  nav .links a:hover{color:#fff}
+  .lang-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:.3rem .8rem;border-radius:20px;cursor:pointer;font-size:.85rem}
+  .hero{background:linear-gradient(135deg,var(--sea) 0%,#063d52 100%);color:#fff;text-align:center;padding:5rem 2rem}
+  .hero h1{font-size:3rem;margin-bottom:1rem;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .hero p{font-size:1.2rem;opacity:.9;max-width:600px;margin:0 auto 2rem}
+  .hero .cta{display:inline-block;background:var(--coral);color:#fff;padding:.8rem 2rem;border-radius:30px;text-decoration:none;font-weight:700}
+  .hero .cta:hover{background:#c44a28}
+  .catch-banner{background:var(--sea);color:#fff;text-align:center;padding:.8rem 2rem;font-size:1rem}
+  .catch-banner strong{color:#ffe066}
+  section{padding:4rem 2rem;max-width:1000px;margin:0 auto}
+  h2{font-size:1.9rem;color:var(--sea);margin-bottom:1.5rem;text-align:center}
+  .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+  .menu-item{background:#fff;border-radius:10px;padding:1.2rem;border-top:4px solid var(--sea);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .menu-item h3{color:var(--sea);font-size:1rem;margin-bottom:.3rem}
+  .menu-item p{font-size:.85rem;color:#556;margin-bottom:.5rem}
+  .menu-item .price{font-weight:700;color:var(--coral)}
+  .fresh{display:inline-block;background:#e8f6f9;color:var(--sea);font-size:.72rem;padding:.15rem .5rem;border-radius:10px;font-weight:700;margin-left:.3rem}
+  .info-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem}
+  .info-card{text-align:center;padding:1.5rem;background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .info-card .icon{font-size:2rem;margin-bottom:.5rem}
+  .info-card h3{font-size:1rem;color:var(--sea);margin-bottom:.3rem}
+  .info-card a{color:var(--sea);text-decoration:none}
+  .form-wrap{background:#fff;border-radius:14px;padding:2rem;box-shadow:0 4px 16px rgba(0,0,0,.08);max-width:600px;margin:0 auto}
+  .form-group{margin-bottom:1.2rem}
+  label{display:block;font-size:.9rem;color:var(--dark);margin-bottom:.3rem;font-weight:600}
+  input,select,textarea{width:100%;padding:.7rem 1rem;border:1px solid #ddd;border-radius:8px;font-size:.95rem;font-family:inherit}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sea)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  button[type=submit]{background:var(--sea);color:#fff;border:none;padding:.8rem 2rem;border-radius:30px;font-size:1rem;font-weight:700;cursor:pointer;width:100%}
+  button[type=submit]:hover{background:#085570}
+  footer{background:var(--dark);color:#acd;text-align:center;padding:2rem;font-size:.9rem}
+  footer a{color:#ffe066;text-decoration:none}
+  [data-lang=en] .el{display:none}
+  [data-lang=el] .en{display:none}
+  @media(max-width:600px){.hero h1{font-size:2rem}.form-row{grid-template-columns:1fr}nav .links{display:none}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">← <span class="el">το Ψαροπούλι</span><span class="en">The Fish Place</span></a>
+  <div class="links">
+    <a href="#menu"><span class="el">Μενού</span><span class="en">Menu</span></a>
+    <a href="#info"><span class="el">Πληροφορίες</span><span class="en">Info</span></a>
+    <a href="#booking"><span class="el">Κράτηση</span><span class="en">Book</span></a>
+  </div>
+  <button class="lang-btn" onclick="toggleLang()">EN / ΕΛ</button>
+</nav>
+
+<div class="hero">
+  <h1>🐟 <span class="el">το Ψαροπούλι</span><span class="en">The Fish Place</span></h1>
+  <p class="el">Φρέσκα ψάρια απ' την αγορά κάθε πρωί — θαλασσινά που μυρίζουν θάλασσα</p>
+  <p class="en">Fresh-from-market fish every morning — seafood that tastes like the sea</p>
+  <a class="cta" href="#booking"><span class="el">Κλείσε τραπέζι</span><span class="en">Book a table</span></a>
+</div>
+
+<div class="catch-banner">
+  🎣 <span class="el"><strong>Σημερινή σύλληψη:</strong> Λαβράκι, Τσιπούρα, Μύδια Θεσσαλονίκης</span>
+  <span class="en"><strong>Today's catch:</strong> Sea bass, Gilt-head bream, Thessaloniki mussels</span>
+</div>
+
+<section id="menu">
+  <h2><span class="el">Θαλασσινά &amp; Ψάρια</span><span class="en">Seafood &amp; Fish</span></h2>
+  <div class="menu-grid">
+    <div class="menu-item">
+      <h3><span class="el">Λαβράκι σχάρας</span><span class="en">Grilled Sea Bass</span> <span class="fresh">FRESH</span></h3>
+      <p class="el">Ολόκληρο, λαδολέμονο, ρίγανη</p><p class="en">Whole, olive oil &amp; lemon, oregano</p>
+      <div class="price"><span class="el">τιμή / κιλό</span><span class="en">price / kg</span> 32 €</div>
+    </div>
+    <div class="menu-item">
+      <h3><span class="el">Μύδια σαγανάκι</span><span class="en">Mussels saganaki</span> <span class="fresh">FRESH</span></h3>
+      <p class="el">Σε σάλτσα ντομάτας με φέτα</p><p class="en">In tomato sauce with feta cheese</p>
+      <div class="price">12 €</div>
+    </div>
+    <div class="menu-item">
+      <h3><span class="el">Καλαμαράκια τηγανητά</span><span class="en">Fried Calamari</span></h3>
+      <p class="el">Τραγανά, με σκορδαλιά</p><p class="en">Crispy rings, with garlic dip</p>
+      <div class="price">9 €</div>
+    </div>
+    <div class="menu-item">
+      <h3><span class="el">Γαρίδες σχάρας</span><span class="en">Grilled Prawns</span> <span class="fresh">FRESH</span></h3>
+      <p class="el">Μεγάλες γαρίδες, βούτυρο, σκόρδο</p><p class="en">King prawns, butter &amp; garlic</p>
+      <div class="price">18 €</div>
+    </div>
+    <div class="menu-item">
+      <h3><span class="el">Ψαρόσουπα</span><span class="en">Fish Soup</span></h3>
+      <p class="el">Παραδοσιακή κακαβιά</p><p class="en">Traditional kakavia fish stew</p>
+      <div class="price">10 €</div>
+    </div>
+    <div class="menu-item">
+      <h3><span class="el">Ταραμοσαλάτα</span><span class="en">Taramosalata</span></h3>
+      <p class="el">Σπιτική, με φρεσκοψημένο ψωμί</p><p class="en">Homemade, with freshly baked bread</p>
+      <div class="price">5 €</div>
+    </div>
+  </div>
+</section>
+
+<section id="info" style="background:var(--foam);padding:4rem 2rem;max-width:100%">
+  <div style="max-width:1000px;margin:0 auto">
+    <h2><span class="el">Πού θα μας βρείτε</span><span class="en">Where to find us</span></h2>
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="icon">📍</div>
+        <h3><span class="el">Διεύθυνση</span><span class="en">Address</span></h3>
+        <p><a href="https://maps.google.com/?q=ψαροταβέρνα+Αθήνα" target="_blank">
+          <span class="el">Παραλία Φλοίσβου 22, Παλαιό Φάληρο</span>
+          <span class="en">22 Floisvos Waterfront, Paleo Faliro</span>
+        </a></p>
+      </div>
+      <div class="info-card">
+        <div class="icon">📞</div>
+        <h3><span class="el">Τηλέφωνο</span><span class="en">Phone</span></h3>
+        <p><a href="tel:+302109000222">+30 210 900 0222</a></p>
+      </div>
+      <div class="info-card">
+        <div class="icon">🕐</div>
+        <h3><span class="el">Ώρες</span><span class="en">Hours</span></h3>
+        <p class="el">Τρ–Κυρ 12:00–23:00</p>
+        <p class="en">Tue–Sun 12:00–23:00</p>
+      </div>
+      <div class="info-card">
+        <div class="icon">🚢</div>
+        <h3><span class="el">Θέα θάλασσα</span><span class="en">Sea view</span></h3>
+        <p class="el">Τραπέζια δίπλα στη θάλασσα</p>
+        <p class="en">Tables right by the sea</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="booking" style="max-width:1000px;margin:0 auto;padding:4rem 2rem">
+  <h2><span class="el">Κράτηση Τραπεζιού</span><span class="en">Table Booking</span></h2>
+  <div class="form-wrap">
+    <form action="https://formsubmit.co/demo@example.com" method="POST">
+      <input type="hidden" name="_subject" value="Νέα κράτηση - Ψαροπούλι">
+      <input type="hidden" name="_captcha" value="false">
+      <div class="form-row">
+        <div class="form-group">
+          <label><span class="el">Ονοματεπώνυμο</span><span class="en">Full name</span></label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+          <label><span class="el">Τηλέφωνο</span><span class="en">Phone</span></label>
+          <input type="tel" name="phone" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><span class="el">Ημερομηνία</span><span class="en">Date</span></label>
+          <input type="date" name="date" required>
+        </div>
+        <div class="form-group">
+          <label><span class="el">Ώρα</span><span class="en">Time</span></label>
+          <select name="time">
+            <option>12:00</option><option>12:30</option><option>13:00</option>
+            <option>13:30</option><option>14:00</option><option>19:00</option>
+            <option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label><span class="el">Αριθμός ατόμων</span><span class="en">Number of guests</span></label>
+        <select name="guests">
+          <option>2</option><option>3</option><option>4</option><option>5</option>
+          <option>6</option><option>7-10</option><option>10+</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label><span class="el">Θέλετε τραπέζι με θέα;</span><span class="en">Sea view table preference?</span></label>
+        <select name="seaview">
+          <option value="yes"><span class="el">Ναι, παρακαλώ</span><span class="en">Yes please</span></option>
+          <option value="any"><span class="el">Δεν με πειράζει</span><span class="en">No preference</span></option>
+        </select>
+      </div>
+      <button type="submit"><span class="el">Αποστολή Κράτησης</span><span class="en">Send Booking</span></button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 το Ψαροπούλι &nbsp;|&nbsp; <a href="tel:+302109000222">+30 210 900 0222</a> &nbsp;|&nbsp;
+  <a href="https://maps.google.com/?q=ψαροταβέρνα+Αθήνα" target="_blank">Google Maps</a></p>
+  <p style="margin-top:.5rem;color:#456;font-size:.8rem">Demo site by <a href="/">KP Demo Sites</a></p>
+</footer>
+<script>function toggleLang(){var h=document.documentElement;h.dataset.lang=h.dataset.lang==='el'?'en':'el'}</script>
+</body>
+</html>
