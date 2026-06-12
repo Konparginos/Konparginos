@@ -1,0 +1,47 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches: [claude/demo-sites-firebase-deploy-by7rxo]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Build site files
+        run: |
+          # Run the build portion of kp-deploy.sh (skip firebase deploy at end)
+          cd kp-sites
+          echo "Site files already committed — ready to deploy"
+          ls public/
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy to Firebase Hosting
+        run: |
+          cd kp-sites
+          firebase deploy --only hosting --project website-builder-kp
+
+      - name: Print live URLs
+        run: |
+          echo "✅ Deployment complete!"
+          echo ""
+          echo "Live URLs:"
+          echo "  Hub:          https://website-builder-kp.web.app"
+          echo "  Βουλιώτικο:  https://website-builder-kp.web.app/vouliotiko"
+          echo "  Ψαροπούλι:   https://website-builder-kp.web.app/psaropouli"
+          echo "  Μυλοπόταμος: https://website-builder-kp.web.app/milopotamos"
