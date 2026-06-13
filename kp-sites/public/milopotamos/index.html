@@ -13,11 +13,26 @@ h1,h2,h3{font-family:Gabarito,system-ui}
 header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--soft)}
 .logo{font-family:Gabarito;font-weight:700;font-size:20px;color:var(--crust)}
 #lang{background:none;border:1px solid var(--crust);color:var(--crust);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:13px}
-.hero{text-align:center;padding:60px 20px 56px;background:radial-gradient(ellipse at top,#F6E9D2,var(--cream) 70%)}
+@keyframes orb1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-80px,-60px) scale(1.25)}66%{transform:translate(60px,40px) scale(0.8)}}
+@keyframes orb2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(100px,-80px) scale(1.2)}}
+@keyframes orb3{0%,100%{transform:translate(0,0)}40%{transform:translate(-50px,80px) scale(1.15)}70%{transform:translate(70px,-30px)}}
+@keyframes ovenglow{0%,100%{opacity:.55;transform:scaleX(1)}50%{opacity:.75;transform:scaleX(1.1)}}
+@keyframes mote{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:.6}90%{opacity:.4}100%{transform:translateY(-120px) translateX(20px);opacity:0}}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-2%,-2%)}40%{transform:translate(2%,1%)}60%{transform:translate(-1%,2%)}80%{transform:translate(1%,-1%)}100%{transform:translate(0,0)}}
+.hero{position:relative;overflow:hidden;background:#140904;text-align:center;padding:80px 20px 88px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.hero h1{color:#F6E9D2}
+.hero .since{color:var(--wheat)}
+.hero p{color:#D9C4A0}
+.hero-canvas{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);will-change:transform}
+.hero-noise{position:absolute;inset:-100%;width:300%;height:300%;opacity:.04;background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");animation:grain .35s steps(4) infinite}
+.hero-content{position:relative;z-index:2}
+.mote{position:absolute;width:3px;height:3px;border-radius:50%;background:#D4A44C;animation:mote linear infinite;filter:blur(1px)}
 .hero h1{font-size:clamp(36px,8vw,56px);margin:0 0 8px;color:var(--crust)}
 .hero .since{color:var(--wheat);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
 .hero p{max-width:540px;margin:10px auto 26px;font-size:17px;color:#5C4A35}
 .cta{display:inline-block;background:var(--crust);color:#fff;text-decoration:none;font-weight:600;border-radius:12px;padding:14px 26px;margin:4px 6px}
+.hero .cta.ghost{background:transparent;border:1px solid #ffffff88;color:#F6E9D2}
 .cta.ghost{background:transparent;border:1px solid var(--crust);color:var(--crust)}
 .openbar{background:var(--crust);color:#F6E9D2;text-align:center;padding:12px;font-weight:600;font-size:15px}
 section{max-width:860px;margin:0 auto;padding:48px 20px}
@@ -43,12 +58,26 @@ footer a{color:#fff}
 </header>
 
 <div class="hero">
+  <div class="hero-canvas" aria-hidden="true">
+    <div class="orb" style="width:650px;height:650px;background:#3B2008;top:-180px;left:-180px;animation:orb1 20s ease-in-out infinite;opacity:.95"></div>
+    <div class="orb" style="width:550px;height:550px;background:#7A4A1E;top:10%;right:-200px;animation:orb2 24s ease-in-out infinite;opacity:.7"></div>
+    <div class="orb" style="width:800px;height:200px;background:#C98A2B;bottom:-180px;left:5%;border-radius:50%;animation:ovenglow 6s ease-in-out infinite;opacity:.5"></div>
+    <div class="orb" style="width:400px;height:400px;background:#5C3010;bottom:-100px;left:45%;animation:orb3 16s ease-in-out infinite;opacity:.7"></div>
+    <div class="mote" style="left:20%;bottom:30%;animation-duration:8s;animation-delay:0s"></div>
+    <div class="mote" style="left:35%;bottom:20%;animation-duration:11s;animation-delay:-3s;width:2px;height:2px"></div>
+    <div class="mote" style="left:55%;bottom:25%;animation-duration:9s;animation-delay:-6s"></div>
+    <div class="mote" style="left:70%;bottom:15%;animation-duration:13s;animation-delay:-1s;width:2px;height:2px"></div>
+    <div class="mote" style="left:80%;bottom:35%;animation-duration:7s;animation-delay:-4s"></div>
+    <div class="hero-noise"></div>
+  </div>
+  <div class="hero-content">
   <div class="since"><span class="gr">Παραδοσιακός φούρνος · Πλατεία Βούλας</span><span class="en">Traditional bakery · Voula square</span></div>
   <h1>ο Μυλοπόταμος</h1>
   <p class="gr">Από τους πιο παλιούς φούρνους της γειτονιάς. Ζυμωτό ψωμί, ζεστές πίτες και γλυκά, ψημένα κάθε πρωί από τις 6 — με την ίδια φροντίδα, χρόνια τώρα.</p>
   <p class="en">One of the neighbourhood's oldest bakeries. Hand-kneaded bread, warm pies and sweets, baked fresh every morning from 6am — with the same care, year after year.</p>
   <a class="cta" href="#order"><span class="gr">Παραγγελία για παραλαβή</span><span class="en">Order for pickup</span></a>
   <a class="cta ghost" href="tel:+302108958080">☎ 210 895 8080</a>
+  </div>
 </div>
 
 <div class="openbar"><span class="gr">Ανοιχτά κάθε μέρα 6:00 – 21:00</span><span class="en">Open daily 6am – 9pm</span></div>
@@ -89,5 +118,22 @@ footer a{color:#fff}
   ο Μυλοπόταμος · Πλαστήρα 6, Βούλα · <a href="tel:+302108958080">210 895 8080</a><br>
   <span style="opacity:.55;font-size:12px">Demo σχεδιασμένο από KP · kp-demos</span>
 </footer>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search).get('p');
+  var ok=false;
+  if(p){try{var d=JSON.parse(atob(p));ok=d&&d.e&&Date.now()<d.e;}catch(e){}}
+  if(!ok){
+    var o=document.createElement('div');
+    o.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(20,9,4,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:system-ui,sans-serif;color:#fff;text-align:center;padding:24px';
+    o.innerHTML='<div style="font-size:48px;margin-bottom:16px">⏳</div>'
+      +'<h2 style="margin:0 0 12px;font-size:24px;font-weight:700">Το demo έληξε</h2>'
+      +'<p style="margin:0 0 24px;opacity:.75;max-width:380px;line-height:1.6">Το preview link που χρησιμοποιείτε έχει λήξει.<br>Επικοινωνήστε μαζί μας για ανανέωση ή για να προχωρήσουμε.</p>'
+      +'<a href="mailto:konstantinosparginos@gmail.com" style="background:#C98A2B;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:15px">Επικοινωνία →</a>';
+    document.body.appendChild(o);
+    document.body.style.overflow='hidden';
+  }
+})();
+</script>
 </body>
 </html>
